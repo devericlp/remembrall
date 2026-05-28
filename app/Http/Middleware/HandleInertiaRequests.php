@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Actions\Tasks\GetCountOverdueTasks;
+use App\Actions\Users\GetAuthUser;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -37,6 +39,10 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             'appName' => config('app.name'),
+            'translations' => getTranslations(),
+            'overdueTasksCount' => $request->user() ? app(GetCountOverdueTasks::class)->handle($request->user()->id) : 0,
+            'currentLanguage' => app()->getLocale(),
+            'auth.user' => fn () => app(GetAuthUser::class)->handle(),
             ...parent::share($request),
             //
         ];

@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers\Profile;
+
+use App\Http\Controllers\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class ViewProfileController extends Controller
+{
+    /**
+     * Handle the incoming request.
+     */
+    public function __invoke(): Response
+    {
+        return Inertia::render('App/Profile', [
+            'languages' => [
+                ['key' => 'en', 'title' => __('messages.english')],
+                ['key' => 'pt_br', 'title' => __('messages.portuguese')],
+            ],
+        ]);
+    }
+}
