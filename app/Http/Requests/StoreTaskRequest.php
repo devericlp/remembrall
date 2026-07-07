@@ -23,15 +23,15 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'title' => ['required', 'string', 'max:255'],
-            // 'date' => ['nullable', 'string'],
-            // 'startTime' => ['nullable', 'string'],
-            // 'endTime' => ['nullable', 'string'],
-            // 'description' => ['nullable', 'string', 'max:255'],
-            // 'category' => ['nullable', 'string'],
-            // 'priority' => ['nullable', 'string'],
-            // 'reminderInterval' => ['nullable', 'integer'],
-            // 'recurrence' => ['nullable', 'string'],
+            'title'           => ['required', 'string', 'max:255'],
+            'date'            => ['nullable', 'string'],
+            'startTime'       => ['nullable', 'string'],
+            'endTime'         => ['nullable', 'string'],
+            'description'     => ['nullable', 'string', 'max:255'],
+            'category'        => ['nullable', 'string'],
+            'priority'        => ['nullable', 'string'],
+            'reminderInterval' => ['nullable', 'string'],
+            'recurrence'      => ['nullable', 'string'],
         ];
     }
 

@@ -17,8 +17,6 @@ class GetAuthUser
             'email',
             'avatar',
             'receive_notifications',
-            'notify_overdue',
-            'notify_due_soon'
         );
     }
 }

@@ -1,113 +1,110 @@
 import DefaultLayout from '@/Layouts/DefaultLayout';
-import { router } from '@inertiajs/react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { GlobalProps } from '@/types/global';
+import { router, usePage } from '@inertiajs/react';
+import { useEffect, type ReactNode } from 'react';
 
-export default function SplashScreen() {
-    const [progress, setProgress] = useState(0);
+const TITLE = 'Remembrall';
+const SPLASH_DURATION = 10000;
+
+const SplashScreen: React.FC & { layout?: (page: ReactNode) => ReactNode } = function SplashScreen() {
+    const { auth } = usePage<GlobalProps>().props;
 
     useEffect(() => {
-        const steps = [15, 35, 55, 75, 90, 100];
-        let i = 0;
+        if (auth?.user) {
+            router.visit('/home');
+            return;
+        }
 
-        const interval = setInterval(() => {
-            if (i < steps.length) {
-                setProgress(steps[i++]);
-            } else {
-                clearInterval(interval);
-                // Redireciona para o app quando terminar
-                setTimeout(() => router.visit('/login'), 600);
-            }
-        }, 420);
-
-        return () => clearInterval(interval);
+        const timer = setTimeout(() => router.visit('/login'), SPLASH_DURATION);
+        return () => clearTimeout(timer);
     }, []);
 
     return (
-        <DefaultLayout>
-            <AnimatePresence>
-                <motion.div
-                    exit={{ opacity: 0, scale: 1.05, transition: { duration: 0.5 } }}
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        background: '#6D2E32',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        overflow: 'hidden',
-                    }}
-                >
-                    <motion.img
-                        src='/images/orb-clear.png'
-                        alt="Remembrall"
-                        style={{ width: 260, height: 260, objectFit: 'contain', mixBlendMode: 'lighten' }}
-                        initial={{ opacity: 0, scale: 0.85, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: [20, 0, -8, 0, -8, 0] }}
-                        transition={{ duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }}
+        <div className="relative h-screen overflow-hidden bg-surface-base">
+            <div className="splash-iris absolute inset-0 flex flex-col items-center justify-center bg-[#14151C]">
+                <div className="splash-dim flex flex-col items-center gap-12">
+                    <video
+                        src="/videos/orb_video.mp4"
+                        autoPlay
+                        muted
+                        playsInline
+                        className="w-64 object-contain"
                     />
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        style={{
-                            margin: '8px 0 4px',
-                            color: '#e8c4b0',
-                            fontSize: 34,
-                            fontWeight: 700,
-                            fontFamily: 'Georgia, serif',
-                            letterSpacing: '0.06em',
-                            textShadow: `0 0 ${8 + progress * 0.2}px rgba(220,150,130,${0.3 + progress * 0.004})`,
-                        }}
+                    <h1
+                        className="flex text-4xl font-semibold tracking-[0.18em] text-[#B89B6A]"
+                        style={{ fontFamily: "'Cinzel', serif" }}
                     >
-                        Remembrall
-                    </motion.p>
+                        {[...TITLE].map((letter, index) => (
+                            <span
+                                key={index}
+                                className="splash-letter"
+                                style={{ animationDelay: `${1.4 + index * 0.09}s` }}
+                            >
+                                {letter}
+                            </span>
+                        ))}
+                    </h1>
+                </div>
+            </div>
 
-                    {/* Tagline */}
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.85 }}
-                        style={{
-                            margin: '0 0 28px',
-                            color: 'rgba(232,196,176,0.55)',
-                            fontSize: 13,
-                            fontFamily: 'Georgia, serif',
-                            fontStyle: 'italic',
-                            letterSpacing: '0.08em',
-                        }}
-                    >
-                        nunca mais esqueça
-                    </motion.p>
+            <style>{`
+                .splash-iris {
+                    clip-path: circle(141% at 50% 50%);
+                    animation: splash-iris-close 1.5s cubic-bezier(0.65, 0, 0.35, 1) 8.5s forwards;
+                }
 
-                    {/* Barra de progresso */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.9 }}
-                        style={{
-                            width: 180,
-                            height: 6,
-                            background: 'rgba(255,255,255,0.1)',
-                            borderRadius: 99,
-                            overflow: 'hidden',
-                            border: '0.5px solid rgba(255,200,180,0.18)',
-                        }}
-                    >
-                        <motion.div
-                            animate={{ width: `${progress}%` }}
-                            transition={{ ease: 'easeOut', duration: 0.45 }}
-                            style={{
-                                height: '100%',
-                                background: 'linear-gradient(90deg, rgba(200,120,100,0.8), rgba(255,200,160,1))',
-                                borderRadius: 99,
-                            }}
-                        />
-                    </motion.div>
-                </motion.div>
-            </AnimatePresence>
-        </DefaultLayout>
+                .splash-dim {
+                    animation: splash-content-dim 1.2s ease-in 7.9s forwards;
+                }
+
+                .splash-letter {
+                    opacity: 0;
+                    filter: blur(8px);
+                    transform: translateY(10px);
+                    text-shadow: 0 0 24px rgba(184, 155, 106, 0.35);
+                    animation: splash-letter-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                }
+
+                @keyframes splash-letter-in {
+                    to {
+                        opacity: 1;
+                        filter: blur(0);
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes splash-content-dim {
+                    to {
+                        opacity: 0.15;
+                        transform: scale(0.96);
+                    }
+                }
+
+                @keyframes splash-iris-close {
+                    to {
+                        clip-path: circle(0% at 50% 50%);
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .splash-letter {
+                        animation-duration: 0.01s;
+                        animation-delay: 0s;
+                    }
+
+                    .splash-dim {
+                        animation: none;
+                    }
+
+                    .splash-iris {
+                        animation-duration: 0.3s;
+                    }
+                }
+            `}</style>
+        </div>
     );
-}
+};
+
+SplashScreen.layout = (page: ReactNode) => <DefaultLayout>{page}</DefaultLayout>;
+
+export default SplashScreen;

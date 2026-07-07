@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Actions\Tasks\CheckDueTaskReminders;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::call(fn () => app(CheckDueTaskReminders::class)->handle())
+    // ->everyFifteenMinutes()
+    ->everyMinute()
+    ->name('check-due-task-reminders')
+    ->withoutOverlapping();

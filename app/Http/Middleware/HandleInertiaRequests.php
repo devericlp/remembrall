@@ -2,9 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Actions\Tasks\GetCountOverdueTasks;
+use App\Actions\Tasks\GetOrbState;
 use App\Actions\Users\GetAuthUser;
+use App\Enums\Priorities;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -37,14 +39,26 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $orbData = $request->user()
+            ? app(GetOrbState::class)->handle($request->user()->id)
+            : ['overdue_count' => 0, 'orb_state' => 'clear'];
+
+        $flash = Inertia::getFlashed($request);
+
         return [
             'appName' => config('app.name'),
             'translations' => getTranslations(),
-            'overdueTasksCount' => $request->user() ? app(GetCountOverdueTasks::class)->handle($request->user()->id) : 0,
+            'overdueTasksCount' => $orbData['overdue_count'],
+            'orbState' => $orbData['orb_state'],
             'currentLanguage' => app()->getLocale(),
             'auth.user' => fn () => app(GetAuthUser::class)->handle(),
+            'vapidPublicKey' => config('webpush.vapid.public_key'),
+            'priorities' => Priorities::options(),
+            'flash' => [
+                'error' => $flash['error'] ?? null,
+                'newAchievements' => $flash['newAchievements'] ?? null,
+            ],
             ...parent::share($request),
-            //
         ];
     }
 }

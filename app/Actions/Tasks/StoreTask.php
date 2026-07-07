@@ -19,10 +19,10 @@ class StoreTask
         // create a task
         $task = new Task;
 
-        $date = match ($data['date']) {
-            'tomorrow' => now()->addDay(),
-            null => now(),
-            default => Carbon::parse($data['date'])
+        $date = match (true) {
+            $data['date'] === 'tomorrow' => now()->addDay()->startOfDay(),
+            empty($data['date'])         => now()->startOfDay(),
+            default                      => Carbon::createFromFormat('Y-m-d', substr($data['date'], 0, 10))->startOfDay(),
         };
 
         $start_date = $date->copy()->setTime(explode(':', $data['startTime'])[0], explode(':', $data['startTime'])[1]);
@@ -36,7 +36,7 @@ class StoreTask
         $task->category = $data['category'] ?? Categories::GENERAL->value;
         $task->recurrence_type = $data['recurrence'] ?? null;
         $task->recurrence_value = match ($data['recurrence'] ?? null) {
-            'weekly' => $data['weekDay'] ?? null,
+            'weekly' => isset($data['weekDay']) ? json_encode($data['weekDay']) : null,
             'monthly' => $data['monthDay'] ?? null,
             default => null,
         };

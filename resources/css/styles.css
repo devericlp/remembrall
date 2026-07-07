@@ -1,0 +1,281 @@
+/*
+ * Remembrall — Dark Theme
+ * Baseado no design-system.md
+ * Compatível com ShadcnUI via variáveis CSS customizadas
+ */
+
+@theme {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-card-border: var(--card-border);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    /* Paleta dourada exposta como utilitários Tailwind */
+    --color-gold-primary: #D2A25A;
+    --color-gold-light: #E0B56D;
+    --color-gold-dark: #8C6230;
+    --color-gold-soft: #A97A3C;
+
+    /* Fundos expostos como utilitários Tailwind */
+    --color-surface-base: #0B0F15;
+    --color-surface-secondary: #121821;
+    --color-surface-tertiary: #1A2230;
+    --color-surface-elevated: #181E2A;
+
+    /* Switch */
+    --color-switch-active-thumb: #F4E3BF;
+    --color-switch-inactive-track: #2A313F;
+
+    /* Badges */
+    --color-badge-bg: var(--badge-bg);
+    --color-badge-border: var(--badge-border);
+    --color-badge-text: var(--badge-text);
+
+    /* Progress */
+    --color-progress-track: var(--progress-track);
+    --color-progress-fill: var(--progress-fill);
+
+    --font-heading: "Cinzel", "Cormorant Garamond", serif;
+    --font-body: "Inter", sans-serif;
+
+    --color-page-header: var(--page-header);
+    --color-nav-icon: var(--nav-icon);
+
+    --color-label-foreground: var(--label-foreground);
+    --color-hint-foreground: var(--hint-foreground);
+    --color-subtle-foreground: var(--subtle-foreground);
+    --color-ghost-hover: var(--ghost-hover);
+    --color-link-hover: var(--link-hover);
+
+    /* Navegação inferior */
+    --color-nav-item-active: var(--nav-item-active);
+    --color-nav-item-inactive: var(--nav-item-inactive);
+
+    /* Gradiente de celebração (conclusão de tarefa) */
+    --color-celebrate-from: var(--celebrate-from);
+    --color-celebrate-via: var(--celebrate-via);
+    --color-celebrate-to: var(--celebrate-to);
+    --color-celebrate-foreground: var(--celebrate-foreground);
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: 0.5rem;
+}
+
+@layer base {
+    :root {
+        /* ── Fundos ──────────────────────────────────────────────── */
+        --background: #0B0F15;
+        /* Fundo geral da aplicação  */
+        --foreground: #D9C6A7;
+        /* Texto primário            */
+
+        /* ── Cards / Superfícies ─────────────────────────────────── */
+        --card: #121821;
+        /* Fundo secundário          */
+        --card-foreground: #D9C6A7;
+        --card-border: rgba(210, 162, 90, 0.12);
+        /* Dourado primário c/ alpha baixo */
+
+        /* ── Popover / Dropdown / Modal ──────────────────────────── */
+        --popover: #1A2230;
+        /* Fundo terciário           */
+        --popover-foreground: #D9C6A7;
+
+        /* ── Cabeçalho de página ─────────────────────────────────── */
+        --page-header: #D2A25A;
+        /* Dourado primário          */
+
+        /* ── Ícones de navegação ─────────────────────────────────── */
+        --nav-icon: #AFA491;
+        /* Texto secundário (inativo) */
+
+        /* ── Botão primário ──────────────────────────────────────── */
+        --primary: #D2A25A;
+        /* Dourado primário          */
+        --primary-foreground: #0B0F15;
+        /* Texto escuro sobre dourado */
+
+        /* ── Botão secundário ────────────────────────────────────── */
+        --secondary: #181E2A;
+        /* Superfície elevada        */
+        --secondary-foreground: #D9C6A7;
+
+        /* ── Muted (áreas esmaecidas) ────────────────────────────── */
+        --muted: #121821;
+        --muted-foreground: #AFA491;
+        /* Texto secundário          */
+
+        /* ── Accent (destaque / hover ativo) ────────────────────── */
+        --accent: #E0B56D;
+        /* Dourado claro             */
+        --accent-foreground: #0B0F15;
+
+        /* ── Destrutivo ──────────────────────────────────────────── */
+        --destructive: #E8606E;
+        /* Vermelho alerta           */
+        --destructive-foreground: #FFFFFF;
+
+        /* ── Bordas / Inputs / Ring ──────────────────────────────── */
+        --border: rgba(210, 162, 90, 0.12);
+        /* Dourado primário — borda de input e navegação */
+        --input: #121821;
+        /* Fundo secundário          */
+        --ring: #D2A25A;
+        /* Dourado primário          */
+
+        /* ── Links ───────────────────────────────────────────────── */
+        --link: #D2A25A;
+        --link-hover: #E0B56D;
+
+        /* ── Hierarquia de texto ─────────────────────────────────── */
+        --label-foreground: #D9C6A7;
+        /* Texto primário            */
+        --hint-foreground: #AFA491;
+        /* Texto secundário          */
+        --subtle-foreground: #6E6658;
+        /* Placeholders / desativado */
+
+        /* ── Progress ────────────────────────────────────────────── */
+        --progress-track: #1A2230;
+        --progress-fill: #C98233;
+
+        /* ── Badges ──────────────────────────────────────────────── */
+        --badge-bg: rgba(210, 162, 90, 0.12);
+        --badge-border: rgba(210, 162, 90, 0.20);
+        --badge-text: #D2A25A;
+
+        /* ── Interações ghost ────────────────────────────────────── */
+        --ghost-hover: rgba(210, 162, 90, 0.08);
+
+        /* ── Navegação inferior ──────────────────────────────────── */
+        --nav-item-active: #E5A24E;
+        --nav-item-inactive: #8E8A82;
+
+        /* ── Gradiente de celebração (conclusão de tarefa) ───────── */
+        --celebrate-from: #A9783A;
+        --celebrate-via: #96682F;
+        --celebrate-to: #7B5325;
+        --celebrate-foreground: #F0E6C8;
+
+        --radius: 0.75rem;
+    }
+
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-family: var(--font-body);
+        position: relative;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-heading);
+    }
+
+    a {
+        color: var(--link);
+        transition: color 0.2s ease;
+    }
+
+    a:hover {
+        color: var(--link-hover);
+    }
+}
+
+@utility nav-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-nav-icon);
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(68%) sepia(46%) saturate(520%) hue-rotate(8deg) brightness(96%) contrast(88%);
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+@utility btn-primary {
+    background-color: var(--color-gold-primary);
+    color: var(--color-surface-base);
+    font-weight: 500;
+    transition: filter 0.15s ease;
+
+    &:hover {
+        filter: brightness(1.10);
+    }
+
+    &:active {
+        filter: brightness(0.95);
+    }
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        filter: none;
+    }
+}
+
+@utility btn-revert {
+    background-color: transparent;
+    border: 1px solid color-mix(in srgb, var(--color-hint-foreground) 25%, transparent);
+    color: var(--color-hint-foreground);
+    font-weight: 500;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+
+    &:hover {
+        background-color: color-mix(in srgb, var(--color-hint-foreground) 4%, transparent);
+        border-color: color-mix(in srgb, var(--color-hint-foreground) 40%, transparent);
+        color: var(--color-foreground);
+    }
+
+    &:active {
+        background-color: color-mix(in srgb, var(--color-hint-foreground) 8%, transparent);
+    }
+
+    &:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}
+
+@utility btn-celebrate {
+    background: linear-gradient(180deg, var(--color-celebrate-from), var(--color-celebrate-via) 50%, var(--color-celebrate-to));
+    color: var(--color-celebrate-foreground);
+}

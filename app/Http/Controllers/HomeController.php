@@ -38,6 +38,8 @@ class HomeController extends Controller
                 'recurrences.completed_at',
                 'recurrences.reminder_at',
             ])
+            ->selectRaw('(SELECT COUNT(*) FROM recurrence_checklist_items WHERE recurrence_id = recurrences.id) as checklist_total_count')
+            ->selectRaw('(SELECT COUNT(*) FROM recurrence_checklist_items WHERE recurrence_id = recurrences.id AND completed = 1) as checklist_completed_count')
             ->orderBy('recurrences.end_date', 'ASC');
 
         switch ($tab) {

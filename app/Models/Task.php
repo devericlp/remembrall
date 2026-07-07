@@ -22,6 +22,7 @@ class Task extends Model
         'category',
         'recurrence_type',
         'recurrence_value',
+        'renew_date',
         'google_calendar_event_id',
     ];
 

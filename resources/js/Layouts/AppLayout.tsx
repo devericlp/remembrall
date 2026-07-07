@@ -26,10 +26,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
     return (
         <main className="min-h-screen relative">
-            <div className="fixed inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: "url('/images/bg-default.png')" }}>
-                <div className="absolute inset-0 bg-background/30 backdrop-blur-[1px]" />
-            </div>
             <div className="relative z-10">
                 {children}
                 <BottomNavigator />

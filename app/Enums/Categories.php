@@ -34,48 +34,32 @@ enum Categories: string
     public function getColor(): string
     {
         return match ($this) {
-            self::GENERAL => 'bg-gray-500',
-            self::WORK => 'bg-blue-500',
-            self::PERSONAL => 'bg-green-500',
-            self::MEETING => 'bg-purple-500',
-            self::STUDY => 'bg-yellow-500',
-            self::HEALTH => 'bg-red-500',
-            self::HOUSEHOLD => 'bg-pink-500',
-            self::CAREER => 'bg-indigo-500',
-            self::FAMILY => 'bg-teal-500',
-            self::FINANCE => 'bg-orange-500',
+            self::GENERAL => 'bg-[#2A261F] text-[#C8B89A] border border-[#6E6658]/30',
+            self::WORK => 'bg-[#211F2A] text-[#B8A9D9] border border-[#8A7AA6]/30',
+            self::PERSONAL => 'bg-[#1F2A22] text-[#B7CFA4] border border-[#9CB88A]/30',
+            self::MEETING => 'bg-[#2A221F] text-[#D0A18A] border border-[#A98B7A]/30',
+            self::STUDY => 'bg-[#2B2518] text-[#D2A25A] border border-[#D2A25A]/30',
+            self::HEALTH => 'bg-[#2A1D1E] text-[#E58B86] border border-[#C86D67]/30',
+            self::HOUSEHOLD => 'bg-[#2A241F] text-[#D2B496] border border-[#C7A68B]/30',
+            self::CAREER => 'bg-[#1E2430] text-[#AAB7E6] border border-[#7D89B8]/30',
+            self::FAMILY => 'bg-[#1F2925] text-[#B8D6C6] border border-[#9DB6A9]/30',
+            self::FINANCE => 'bg-[#2B2517] text-[#D6B85C] border border-[#C7A24A]/30',
         };
     }
 
-    public function getBorderColor(): string
+    public function getIcon(): string
     {
         return match ($this) {
-            self::GENERAL => 'border-gray-500',
-            self::WORK => 'border-l-blue-500',
-            self::PERSONAL => 'border-l-green-500',
-            self::MEETING => 'border-l-purple-500',
-            self::STUDY => 'border-l-yellow-500',
-            self::HEALTH => 'border-l-red-500',
-            self::HOUSEHOLD => 'border-l-pink-500',
-            self::CAREER => 'border-l-indigo-500',
-            self::FAMILY => 'border-l-teal-500',
-            self::FINANCE => 'border-l-orange-500',
-        };
-    }
-
-    public function getSeal(): string
-    {
-        return match ($this) {
-            self::GENERAL => '/images/general-seal.png',
-            self::WORK => '/images/work-seal.png',
-            self::PERSONAL => '/images/personal-seal.png',
-            self::MEETING => '/images/meeting-seal.png',
-            self::STUDY => '/images/study-seal.png',
-            self::HEALTH => '/images/health-seal.png',
-            self::HOUSEHOLD => '/images/household-seal.png',
-            self::CAREER => '/images/career-seal.png',
-            self::FAMILY => '/images/family-seal.png',
-            self::FINANCE => '/images/finance-seal.png',
+            self::GENERAL => 'LayoutGrid',
+            self::WORK => 'Briefcase',
+            self::PERSONAL => 'User',
+            self::MEETING => 'Users',
+            self::STUDY => 'BookOpen',
+            self::HEALTH => 'Heart',
+            self::HOUSEHOLD => 'House',
+            self::CAREER => 'TrendingUp',
+            self::FAMILY => 'Baby',
+            self::FINANCE => 'Wallet',
         };
     }
 
@@ -85,8 +69,7 @@ enum Categories: string
             'id' => $case->value,
             'title' => $case->getDescription(),
             'color' => $case->getColor(),
-            'borderColor' => $case->getBorderColor(),
-            'seal' => $case->getSeal(),
+            'icon' => $case->getIcon(),
         ], self::cases());
 
         usort($options, fn ($a, $b) => strcmp($a['title'], $b['title']));

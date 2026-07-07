@@ -16,14 +16,14 @@ export default function TypeCard({ icon: IconComponent, title, subtitle, color, 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             onClick={onClick}
-            className="w-full flex items-start gap-4 cursor-pointer p-5 rounded-2xl border border-border/70 bg-card/60 backdrop-blur-sm hover:bg-card/80 hover:border-primary/40 hover:shadow-lg transition-all text-left"
+            className="w-full flex items-center gap-4 cursor-pointer p-5 rounded-2xl border border-border/70 bg-card/60 backdrop-blur-sm hover:bg-card/80 hover:border-primary/40 hover:shadow-lg transition-all text-left"
         >
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
                 <Icon className="w-6 h-6" />
             </div>
             <div>
                 <p className="font-heading text-base font-bold text-foreground">{title}</p>
-                <p className="font-body text-sm text-muted-foreground mt-0.5 leading-relaxed">{subtitle}</p>
+                <p className="font-body text-sm text-muted-foreground mt-0.5 leading-relaxed line-clamp-2 min-h-11.5">{subtitle}</p>
             </div>
         </motion.button>
     );

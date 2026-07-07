@@ -9,15 +9,21 @@ use Inertia\Inertia;
 
 class ToggleNotificationController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(): RedirectResponse
     {
-        $type = request()->input('type');
         $enabled = request()->boolean('enabled');
 
-        app(UpdateNotifications::class)->handle(type: $type, enabled: $enabled);
+        app(UpdateNotifications::class)->handle($enabled);
+
+        if ($enabled && request()->has('subscription.endpoint')) {
+            request()->user()->updatePushSubscription(
+                request()->input('subscription.endpoint'),
+                request()->input('subscription.keys.p256dh'),
+                request()->input('subscription.keys.auth'),
+            );
+        } elseif (! $enabled) {
+            request()->user()->pushSubscriptions()->delete();
+        }
 
         Inertia::flash('message', __('messages.notifications_updated_successfully'));
 

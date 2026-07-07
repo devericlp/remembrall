@@ -26,6 +26,7 @@ return new class extends Migration
             $table->enum('reminder', ReminderIntervals::cases());
             $table->enum('recurrence_type', RecurrenceTypes::cases())->nullable();
             $table->string('recurrence_value')->nullable();
+            $table->date('renew_date')->nullable();
             $table->string('google_calendar_event_id')->nullable();
             $table->timestamps();
         });

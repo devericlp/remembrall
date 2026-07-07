@@ -1,8 +1,7 @@
 import DayView from "@/components/home/DayView";
 import MonthView from "@/components/home/MonthView";
-import OrbStatusCard from "@/components/home/OrbStatusCard";
 import WeekView from "@/components/home/WeekView";
-import { Button } from "@/components/ui/button";
+import PageHeader from "@/components/layout/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLang } from "@/hooks/useLang";
 import { Category } from "@/types/enums/category";
@@ -16,74 +15,60 @@ import AppLayout from "../../Layouts/AppLayout";
 
 type HomePageProps = {
     tab: string,
-    tasks: Paginated<TaskRecurrence>,
+    tasks: Paginated<TaskRecurrence> | TaskRecurrence[],
     categories: Category[],
     overdueCount: number,
     dueSoonCount: number,
     totalPending: number,
 }
 
-const Home: FC<HomePageProps> & { layout?: (page: ReactNode) => ReactNode } = function Home({ tasks, tab, categories, overdueCount, dueSoonCount, totalPending }: HomePageProps) {
+const Home: FC<HomePageProps> & { layout?: (page: ReactNode) => ReactNode } = function Home({ tasks, tab, categories, overdueCount }: HomePageProps) {
     const { __ } = useLang();
     const { appName } = usePage<GlobalProps>().props;
 
-    function openTaskCreate() {
-        router.visit(`/tasks/create`, { viewTransition: true });
-    }
+    const taskArray: TaskRecurrence[] = Array.isArray(tasks) ? tasks : (tasks.data ?? []);
 
     return (
         <>
             <Head title={__('messages.home')} />
-            <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
-                <div className="text-center mb-2">
-                    <h1 className="font-heading text-2xl md:text-3xl text-foreground font-bold tracking-wide">
-                        {appName}
-                    </h1>
-                    <p className="font-medieval text-muted-foreground text-sm mt-1 italic">
-                        {__('messages.your_tasks_your_magical_memories')}
-                    </p>
-                </div>
-
-                <OrbStatusCard
-                    overdueCount={overdueCount}
-                    dueSoonCount={dueSoonCount}
-                    totalPending={totalPending}
+            <div className="px-4 py-6 pb-24">
+                <PageHeader
+                    title={appName}
+                    action={
+                        <button
+                            onClick={() => router.visit('/tasks/create', { viewTransition: true })}
+                            className="flex items-center justify-center size-6 rounded-full bg-gold-primary text-background hover:opacity-90 transition-opacity cursor-pointer"
+                        >
+                            <Plus className="size-4" />
+                        </button>
+                    }
                 />
 
                 <Tabs value={tab} onValueChange={(value) => router.visit(`/home/${value}`, { viewTransition: true })}>
-                    <TabsList className="w-full bg-card/60 backdrop-blur-sm border border-border">
-                        <TabsTrigger value="day" className="flex-1 gap-2 font-heading text-xs uppercase tracking-wider">
-                            <Sun />
+                    <TabsList className="w-full">
+                        <TabsTrigger value="day" className="uppercase tracking-wider">
+                            <Sun className="w-4 h-4" />
                             {__('messages.day')}
                         </TabsTrigger>
-                        <TabsTrigger value="week" className="flex-1 gap-2 font-heading text-xs uppercase tracking-wider">
+                        <TabsTrigger value="week" className="uppercase tracking-wider">
                             <CalendarDays className="w-4 h-4" />
                             {__('messages.week')}
                         </TabsTrigger>
-                        <TabsTrigger value="month" className="flex-1 gap-2 font-heading text-xs uppercase tracking-wider">
+                        <TabsTrigger value="month" className="uppercase tracking-wider">
                             <CalendarIcon className="w-4 h-4" />
                             {__('messages.month')}
                         </TabsTrigger>
                     </TabsList>
                     <TabsContent value="day">
-                        <DayView tasks={tasks} categories={categories} />
+                        <DayView tasks={tasks as Paginated<TaskRecurrence>} categories={categories} overdueCount={overdueCount} />
                     </TabsContent>
                     <TabsContent value="week">
-                        <WeekView tasks={tasks.data} categories={categories} />
+                        <WeekView tasks={taskArray} categories={categories} />
                     </TabsContent>
                     <TabsContent value="month">
-                        <MonthView tasks={tasks.data} categories={categories} />
+                        <MonthView tasks={taskArray} categories={categories} />
                     </TabsContent>
                 </Tabs>
-
-                <Button
-                    onClick={openTaskCreate}
-                    className="fixed bottom-20 right-6 w-14 h-14 rounded-full shadow-xl bg-[#6D2E32] hover:bg-[#7C373C] shadow-primary/30 font-heading text-xl z-20"
-                    size="icon"
-                >
-                    <Plus className="w-6 h-6" />
-                </Button>
-
             </div>
         </>
     );

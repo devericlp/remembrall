@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('provider_name')->nullable();
             $table->string('provider_id')->nullable();
             $table->boolean('receive_notifications')->default(false);
-            $table->boolean('notify_overdue')->default(false);
-            $table->boolean('notify_due_soon')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

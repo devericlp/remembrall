@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\ReminderIntervals;
 use App\Events\TaskCreated;
 use App\Models\Recurrence;
+use App\Models\Task;
 
 class CreateTaskRecurrence
 {
@@ -27,6 +28,7 @@ class CreateTaskRecurrence
         $reminder = $event->reminder ? ReminderIntervals::from($event->reminder)->getMinutes() : null;
         $limit = $start->copy()->addYear();
         $recurrence = $event->recurrence ?? null;
+        $lastOccurrence = null;
 
         switch ($recurrence) {
             case 'daily':
@@ -37,29 +39,32 @@ class CreateTaskRecurrence
                         'end_date' => $date->copy()->setTimeFrom($end)->toDateTimeString(),
                         'reminder_at' => $reminder ? $date->copy()->subMinutes($reminder)->toDateTimeString() : null,
                     ]);
+                    $lastOccurrence = $date->copy();
                 }
                 break;
             case 'weekly':
-                // Pega o próximo dia da semana desejado
-                $targetWeekDay = $event->weekDay;
-                $date = $start->copy();
-                if ($targetWeekDay) {
-                    // Carbon: 0=Sunday, 1=Monday, ...
-                    $carbonWeekDay = array_search(strtolower($targetWeekDay), [
-                        'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
-                    ]);
-                    if ($carbonWeekDay !== false) {
-                        $date->next($carbonWeekDay);
+                $weekDayMap = [
+                    'sunday' => 0, 'monday' => 1, 'tuesday' => 2, 'wednesday' => 3,
+                    'thursday' => 4, 'friday' => 5, 'saturday' => 6,
+                ];
+
+                foreach ($event->weekDay ?? [] as $dayName) {
+                    $carbonWeekDay = $weekDayMap[strtolower($dayName)] ?? null;
+                    if ($carbonWeekDay === null) continue;
+
+                    $date = $start->copy()->next($carbonWeekDay);
+                    while ($date->lessThan($limit)) {
+                        Recurrence::create([
+                            'task_id' => $task_id,
+                            'start_date' => $date->toDateTimeString(),
+                            'end_date' => $date->copy()->setTimeFrom($end)->toDateTimeString(),
+                            'reminder_at' => $reminder ? $date->copy()->subMinutes($reminder)->toDateTimeString() : null,
+                        ]);
+                        if ($lastOccurrence === null || $date->greaterThan($lastOccurrence)) {
+                            $lastOccurrence = $date->copy();
+                        }
+                        $date->addWeek();
                     }
-                }
-                while ($date->lessThan($limit)) {
-                    Recurrence::create([
-                        'task_id' => $task_id,
-                        'start_date' => $date->toDateTimeString(),
-                        'end_date' => $date->copy()->setTimeFrom($end)->toDateTimeString(),
-                        'reminder_at' => $reminder ? $date->copy()->subMinutes($reminder)->toDateTimeString() : null,
-                    ]);
-                    $date->addWeek();
                 }
                 break;
             case 'monthly':
@@ -79,6 +84,7 @@ class CreateTaskRecurrence
                         'end_date' => $date->copy()->setTimeFrom($end)->toDateTimeString(),
                         'reminder_at' => $reminder ? $date->copy()->subMinutes($reminder)->toDateTimeString() : null,
                     ]);
+                    $lastOccurrence = $date->copy();
                     $date->addMonth();
                 }
                 break;
@@ -90,6 +96,12 @@ class CreateTaskRecurrence
                     'reminder_at' => $reminder ? $event->start_date->copy()->subMinutes($reminder)->toDateTimeString() : null,
                 ]);
                 break;
+        }
+
+        if ($recurrence && $lastOccurrence) {
+            Task::whereKey($task_id)->update([
+                'renew_date' => $lastOccurrence->copy()->subDay()->toDateString(),
+            ]);
         }
     }
 }

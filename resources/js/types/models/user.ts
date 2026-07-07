@@ -5,6 +5,4 @@ export type User = {
     created_at: string
     updated_at: string
     receive_notifications: boolean
-    notify_overdue: boolean
-    notify_due_soon: boolean
 }

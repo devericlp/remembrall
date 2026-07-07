@@ -16,7 +16,7 @@ class TaskCreated
     /**
      * Create a new event instance.
      */
-    public function __construct(public string $task_id, public Carbon $start_date, public Carbon $end_date, public ?string $reminder, public ?string $recurrence, public ?string $weekDay, public ?int $monthDay)
+    public function __construct(public string $task_id, public Carbon $start_date, public Carbon $end_date, public ?string $reminder, public ?string $recurrence, public array|null $weekDay, public ?int $monthDay)
     {
         //
     }

@@ -13,7 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo('/login');
+        $middleware->redirectUsersTo('/home');
         $middleware->web(append: [
             SetLocale::class, // This middleware must be registered before HandleInertiaRequests to ensure the locale is set before rendering any views.
             HandleInertiaRequests::class,
