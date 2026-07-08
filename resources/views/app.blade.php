@@ -7,8 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Remembrall">
-    <meta name="theme-color" content="#FDEED3">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <meta name="theme-color" content="#0B0F15">
+    <link rel="apple-touch-icon" href="/images/logo/icon-appstore.png">
     <link rel="manifest" href="/build/manifest.webmanifest">
     @viteReactRefresh
     @vite(['resources/js/app.tsx', 'resources/css/app.css'])

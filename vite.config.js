@@ -25,25 +25,25 @@ export default defineConfig({
                 name: 'Remembrall',
                 short_name: 'Remembrall',
                 description: 'Gerenciador de tarefas e lembretes',
-                theme_color: '#FDEED3',
-                background_color: '#FDEED3',
+                theme_color: '#0B0F15',
+                background_color: '#0B0F15',
                 display: 'standalone',
                 orientation: 'portrait',
                 start_url: '/',
                 scope: '/',
                 icons: [
                     {
-                        src: '/icon.png',
+                        src: '/images/logo/icon-180.png',
                         sizes: '192x192',
                         type: 'image/png',
                     },
                     {
-                        src: '/icon.png',
+                        src: '/images/logo/icon-512.png',
                         sizes: '512x512',
                         type: 'image/png',
                     },
                     {
-                        src: '/icon.png',
+                        src: '/images/logo/icon-512.png',
                         sizes: '512x512',
                         type: 'image/png',
                         purpose: 'maskable',
@@ -51,7 +51,7 @@ export default defineConfig({
                 ],
                 screenshots: [
                     {
-                        src: '/icon.png',
+                        src: '/images/logo/icon-1024.png',
                         sizes: '1024x1024',
                         type: 'image/png',
                         form_factor: 'narrow',

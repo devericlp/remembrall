@@ -1,13 +1,14 @@
 <?php
 
+use App\Http\Controllers\Achievement\ListAchievementsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ProviderCallbackController;
 use App\Http\Controllers\Auth\RedirectProviderController;
-use App\Http\Controllers\Achievement\ListAchievementsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrbController;
+use App\Http\Controllers\Profile\StatisticsController;
 use App\Http\Controllers\Profile\SwitchLanguageController;
 use App\Http\Controllers\Profile\ToggleNotificationController;
-use App\Http\Controllers\Profile\StatisticsController;
 use App\Http\Controllers\Profile\ViewProfileController;
 use App\Http\Controllers\Task\CreateTaskController;
 use App\Http\Controllers\Task\DestroyChecklistItemController;
@@ -21,7 +22,6 @@ use App\Http\Controllers\Task\ShowTaskController;
 use App\Http\Controllers\Task\StoreChecklistItemController;
 use App\Http\Controllers\Task\StoreTaskController;
 use App\Http\Controllers\Task\ToggleChecklistItemController;
-use App\Http\Controllers\OrbController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/service-worker.js', function () {
@@ -30,8 +30,6 @@ Route::get('/service-worker.js', function () {
         'Service-Worker-Allowed' => '/',
     ]);
 });
-
-// Authentication Routes...
 
 Route::middleware('guest')->group(function () {
     Route::inertia('/', 'Auth/SplashScreen');

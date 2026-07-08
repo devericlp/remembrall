@@ -25,8 +25,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }, [flash]);
 
     return (
-        <main className="min-h-screen relative">
-            <div className="relative z-10">
+        <main className="min-h-dvh md:flex md:justify-center md:bg-surface-secondary">
+            <div className="relative z-10 min-h-dvh w-full md:max-w-120 md:bg-background md:shadow-2xl">
                 {children}
                 <BottomNavigator />
             </div>

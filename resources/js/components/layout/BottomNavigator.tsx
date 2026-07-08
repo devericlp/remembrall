@@ -21,7 +21,7 @@ export default function BottomNavigator() {
     ];
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background border-t border-gold-primary/20 flex items-stretch">
+        <nav className="fixed bottom-0 left-1/2 w-full max-w-120 -translate-x-1/2 z-30 bg-background border-t border-gold-primary/20 flex items-stretch">
             {leftLinks.map(({ to, icon: Icon, label, badge }) => (
                 <BottomNavigatorItem
                     key={to}

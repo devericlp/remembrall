@@ -20,7 +20,7 @@ const SplashScreen: React.FC & { layout?: (page: ReactNode) => ReactNode } = fun
     }, []);
 
     return (
-        <div className="relative h-screen overflow-hidden bg-surface-base">
+        <div className="relative h-dvh overflow-hidden bg-surface-base">
             <div className="splash-iris absolute inset-0 flex flex-col items-center justify-center bg-[#14151C]">
                 <div className="splash-dim flex flex-col items-center gap-12">
                     <video
