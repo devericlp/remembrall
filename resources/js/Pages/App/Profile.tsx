@@ -8,7 +8,9 @@ import { getInitials } from "@/lib/utils";
 import { GlobalProps } from "@/types/global";
 import { User } from "@/types/models/user";
 import { router, useHttp, usePage } from "@inertiajs/react";
-import { BarChart2, Bell, ChevronRight, Globe, LogOut, Mail } from "lucide-react";
+import { format, type Locale } from "date-fns";
+import { enUS, ptBR } from "date-fns/locale";
+import { BarChart2, Bell, ChevronRight, Clock, Globe, LogOut, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import AppLayout from "../../Layouts/AppLayout";
@@ -22,19 +24,23 @@ type language = {
 
 type ProfilePageProps = {
     languages: language[]
+    systemTime: string
 }
+
+const localeMap: Record<string, Locale> = { pt_br: ptBR, en: enUS };
 
 type NotificationProps = {
     language: string;
     receive_notifications: boolean;
 };
 
-function Profile({ languages }: ProfilePageProps) {
+function Profile({ languages, systemTime }: ProfilePageProps) {
     const { appName, auth, currentLanguage } = usePage<GlobalProps>().props;
     const { __ } = useLang();
     const { isLoading: isPushLoading, isSupported, subscribe, unsubscribe } = usePushNotifications();
 
     const user: User = auth.user;
+    const locale = localeMap[currentLanguage] ?? enUS;
 
     const { data, setData } = useHttp<NotificationProps>({
         language: currentLanguage,
@@ -168,13 +174,21 @@ function Profile({ languages }: ProfilePageProps) {
 
                         <button
                             onClick={logout}
-                            className="flex items-center gap-2 w-full py-3 mt-1 text-sm text-label-foreground hover:text-destructive transition-colors cursor-pointer group"
+                            className="flex items-center justify-between w-full py-3 mt-1 text-sm text-label-foreground hover:text-destructive transition-colors cursor-pointer group"
                         >
-                            <LogOut className="size-4 text-nav-icon group-hover:text-destructive transition-colors" />
-                            {__('messages.logout_account')}
+                            <span className="flex items-center gap-2">
+                                <LogOut className="size-4 text-nav-icon group-hover:text-destructive transition-colors" />
+                                {__('messages.logout_account')}
+                            </span>
+                            <ChevronRight className="size-4 text-hint-foreground" />
                         </button>
                     </CardContent>
                 </Card>
+
+                <div className="flex items-center justify-center gap-1.5 text-xs text-hint-foreground">
+                    <Clock className="size-3.5" />
+                    <span>{format(new Date(systemTime), "d 'de' MMMM, HH:mm", { locale })}</span>
+                </div>
             </div>
         </div>
     );

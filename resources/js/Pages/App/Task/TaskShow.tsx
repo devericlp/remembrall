@@ -369,44 +369,45 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                 </div>
 
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                    <SheetContent side="bottom" showCloseButton={false} className="rounded-t-2xl px-4 pb-8 pt-4">
-                        <SheetHeader className="p-0 mb-4">
-                            <SheetTitle className="text-base font-semibold text-label-foreground">
-                                {__("messages.add_item")}
-                            </SheetTitle>
-                        </SheetHeader>
+                    <div className="pb-20">
+                        <SheetContent side="bottom" showCloseButton={false} className="max-h-[85dvh] overflow-y-auto rounded-t-2xl px-4 pt-4  pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+                            <SheetHeader className="p-0 mb-4">
+                                <SheetTitle className="text-base font-semibold text-label-foreground">
+                                    {__("messages.add_item")}
+                                </SheetTitle>
+                            </SheetHeader>
 
-                        <div className="flex flex-col gap-1.5">
-                            <Textarea
-                                value={itemDescription}
-                                onChange={e => setItemDescription(e.target.value)}
-                                maxLength={maxLength}
-                                placeholder={__("messages.description")}
-                                className="resize-none min-h-20 text-sm"
-                                autoFocus
-                            />
-                            <span className="text-right text-xs text-subtle-foreground">
-                                {itemDescription.length}/{maxLength}
-                            </span>
-                        </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Textarea
+                                    value={itemDescription}
+                                    onChange={e => setItemDescription(e.target.value)}
+                                    maxLength={maxLength}
+                                    placeholder={__("messages.description")}
+                                    className="resize-none min-h-20 text-sm"
+                                />
+                                <span className="text-right text-xs text-subtle-foreground">
+                                    {itemDescription.length}/{maxLength}
+                                </span>
+                            </div>
 
-                        <div className="flex gap-3 mt-4">
-                            <Button
-                                variant="outline"
-                                className="flex-1 cursor-pointer"
-                                onClick={() => { setSheetOpen(false); setItemDescription(''); }}
-                            >
-                                {__("messages.cancel")}
-                            </Button>
-                            <Button
-                                className="flex-1 btn-primary cursor-pointer"
-                                onClick={handleStoreItem}
-                                disabled={itemDescription.trim().length === 0}
-                            >
-                                {__("messages.create")}
-                            </Button>
-                        </div>
-                    </SheetContent>
+                            <div className="flex gap-3 mt-4">
+                                <Button
+                                    variant="outline"
+                                    className="flex-1 cursor-pointer"
+                                    onClick={() => { setSheetOpen(false); setItemDescription(''); }}
+                                >
+                                    {__("messages.cancel")}
+                                </Button>
+                                <Button
+                                    className="flex-1 btn-primary cursor-pointer"
+                                    onClick={handleStoreItem}
+                                    disabled={itemDescription.trim().length === 0}
+                                >
+                                    {__("messages.create")}
+                                </Button>
+                            </div>
+                        </SheetContent>
+                    </div>
                 </Sheet>
 
                 <Sheet open={deleteTaskSheetOpen} onOpenChange={setDeleteTaskSheetOpen}>

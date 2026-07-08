@@ -1,7 +1,11 @@
+import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { CacheFirst, NetworkFirst } from 'workbox-strategies';
+import { CacheFirst } from 'workbox-strategies';
+
+self.skipWaiting();
+clientsClaim();
 
 cleanupOutdatedCaches();
 
@@ -26,13 +30,13 @@ registerRoute(
     }),
 );
 
-registerRoute(
-    ({ url }) => url.pathname.startsWith('/api/'),
-    new NetworkFirst({
-        cacheName: 'api-cache',
-        plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 5 })],
-    }),
-);
+// registerRoute(
+//     ({ url }) => url.pathname.startsWith('/api/'),
+//     new NetworkFirst({
+//         cacheName: 'api-cache',
+//         plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 5 })],
+//     }),
+// );
 
 self.addEventListener('push', (event) => {
     if (!event.data) {
