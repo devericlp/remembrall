@@ -14,18 +14,18 @@ class GetHomeStats
     public function handle(int $user_id): array
     {
         $result = DB::selectOne(
-            "
+            '
             SELECT
-                SUM(CASE WHEN r.end_date < datetime('now')                                                              THEN 1 ELSE 0 END) AS overdue_count,
-                SUM(CASE WHEN date(r.start_date) = date('now')                                                          THEN 1 ELSE 0 END) AS total_pending,
-                SUM(CASE WHEN date(r.start_date) = date('now')
-                          AND r.end_date > datetime('now')
-                          AND r.end_date <= datetime('now', '+5 hours')                                                  THEN 1 ELSE 0 END) AS due_soon_count
+                SUM(CASE WHEN r.end_date < NOW()                                                                        THEN 1 ELSE 0 END) AS overdue_count,
+                SUM(CASE WHEN DATE(r.start_date) = CURDATE()                                                            THEN 1 ELSE 0 END) AS total_pending,
+                SUM(CASE WHEN DATE(r.start_date) = CURDATE()
+                          AND r.end_date > NOW()
+                          AND r.end_date <= DATE_ADD(NOW(), INTERVAL 5 HOUR)                                            THEN 1 ELSE 0 END) AS due_soon_count
             FROM recurrences r
             INNER JOIN tasks t ON t.id = r.task_id
             WHERE t.user_id = :user_id
               AND r.completed_at IS NULL
-            ",
+            ',
             ['user_id' => $user_id]
         );
 
