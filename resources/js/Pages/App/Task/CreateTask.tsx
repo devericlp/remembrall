@@ -237,7 +237,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                         id="title"
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('title', e.target.value)}
                                         placeholder={__('messages.task_name_placeholder')}
-                                        className="font-body text-base border-0 border-b rounded-none px-0 shadow-none focus-visible:ring-0 focus-visible:border-primary"
+                                        className="font-body text-base border-0 rounded-none px-0 shadow-none focus-visible:ring-0"
                                     />
                                     {errors.title && <span className="text-destructive text-xs">{errors.title}</span>}
                                 </div>
@@ -261,7 +261,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                             id="description"
                                             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                                             placeholder={__('messages.description_placeholder')}
-                                            className="font-body text-base border-0 border-b rounded-none px-0 shadow-none focus-visible:ring-0 focus-visible:border-primary" />
+                                            className="font-body text-base border-0 rounded-none px-0 shadow-none focus-visible:ring-0" />
                                     </CollapsibleContent>
                                 </Collapsible>
 

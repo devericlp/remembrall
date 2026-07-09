@@ -382,7 +382,18 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                                 onChange={e => setItemDescription(e.target.value)}
                                 maxLength={maxLength}
                                 placeholder={__("messages.description")}
-                                className="resize-none min-h-20 text-sm"
+                                className="
+                                    w-full
+                                    resize-none text-sm
+                                    max-w-full
+                                    overflow-x-hidden
+                                    rounded-t-2xl
+                                    max-h-[85dvh]
+                                    overflow-y-auto
+                                    px-4
+                                    pt-4
+                                    pb-[calc(env(safe-area-inset-bottom)+1rem)]
+                                "
                             />
                             <span className="text-right text-xs text-subtle-foreground">
                                 {itemDescription.length}/{maxLength}
