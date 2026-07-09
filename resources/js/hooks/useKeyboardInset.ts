@@ -8,17 +8,26 @@ export function useKeyboardInset() {
         if (!vv) return;
 
         function update() {
-            const keyboardHeight = window.innerHeight - vv!.height - vv!.offsetTop;
-            setInset(keyboardHeight > 0 ? keyboardHeight : 0);
+            requestAnimationFrame(() => {
+                const keyboardHeight = window.innerHeight - vv!.height - vv!.offsetTop;
+                setInset(keyboardHeight > 0 ? Math.round(keyboardHeight) : 0);
+            });
         }
 
         vv.addEventListener("resize", update);
         vv.addEventListener("scroll", update);
+
+        // força recomputo ao focar/desfocar inputs, cobrindo o atraso do primeiro ciclo no iOS
+        document.addEventListener("focusin", update);
+        document.addEventListener("focusout", update);
+
         update();
 
         return () => {
             vv.removeEventListener("resize", update);
             vv.removeEventListener("scroll", update);
+            document.removeEventListener("focusin", update);
+            document.removeEventListener("focusout", update);
         };
     }, []);
 

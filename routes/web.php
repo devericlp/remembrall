@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Achievement\ListAchievementsController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\ProviderCallbackController;
 use App\Http\Controllers\Auth\RedirectProviderController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrbController;
 use App\Http\Controllers\Profile\StatisticsController;
@@ -31,10 +34,20 @@ Route::get('/service-worker.js', function () {
     ]);
 });
 
+Route::put('/language/update', SwitchLanguageController::class)->name('language.update');
+
 Route::middleware('guest')->group(function () {
     Route::inertia('/', 'Auth/SplashScreen');
     Route::inertia('/login', 'Auth/Login')->name('auth.login');
+    Route::post('/login', LoginController::class)->middleware('throttle:10,1')->name('auth.login.store');
     Route::inertia('/onboarding', 'Auth/Onboarding')->name('auth.onboarding');
+
+    Route::inertia('/register', 'Auth/Register')->name('auth.register');
+    Route::post('/register', RegisterController::class)->middleware('throttle:10,1')->name('auth.register.store');
+
+    Route::inertia('/forgot-password', 'Auth/ForgotPassword')->name('auth.forgot-password');
+    Route::post('/forgot-password', ForgotPasswordController::class)->middleware('throttle:5,1')->name('auth.forgot-password.store');
+    Route::get('/reset-password/{token}', fn () => redirect()->route('auth.login'))->name('password.reset');
 
     Route::get('/auth/{provider}/redirect', RedirectProviderController::class)->middleware('throttle:10,1')->name('auth.provider.redirect');
     Route::get('/auth/{provider}/callback', ProviderCallbackController::class)->middleware('throttle:10,1')->name('auth.provider.callback');

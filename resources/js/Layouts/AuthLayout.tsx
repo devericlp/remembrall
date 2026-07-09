@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { useKeyboardInset } from "@/hooks/useKeyboardInset";
 import { GlobalProps } from "@/types/global";
 import { usePage } from "@inertiajs/react";
 import { useEffect, type ReactNode } from "react";
@@ -16,6 +17,7 @@ export default function AuthLayout({
     padded?: boolean;
 }) {
     const { flash } = usePage<GlobalProps>().props;
+    const keyboardInset = useKeyboardInset();
 
     useEffect(() => {
         if (flash?.error) toast.error(flash.error);
@@ -30,9 +32,12 @@ export default function AuthLayout({
                         style={{ backgroundImage: `url('${background}')` }}
                     />
                 )}
-                <main className={`relative z-10 w-full h-full flex flex-col ${
-                    centered ? "items-center justify-center" : padded ? "px-5 pt-10" : ""
-                }`}>
+                <main
+                    className={`relative z-10 w-full h-full flex flex-col overflow-y-auto ${
+                        centered ? "items-center justify-center" : padded ? "px-5 pt-10" : ""
+                    }`}
+                    style={{ paddingBottom: keyboardInset }}
+                >
                     {children}
                 </main>
                 <Toaster />

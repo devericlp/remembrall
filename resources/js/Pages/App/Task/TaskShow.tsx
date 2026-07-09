@@ -30,7 +30,7 @@ import {
     TriangleAlert,
 } from "lucide-react";
 import type { ElementType, ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useKeyboardInset } from "../../../hooks/useKeyboardInset";
 import { useLang } from "../../../hooks/useLang";
@@ -86,6 +86,18 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
     const keyboardInset = useKeyboardInset();
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (sheetOpen) {
+            // pequeno delay pra esperar a animação do sheet começar antes de focar
+            const timer = setTimeout(() => {
+                textareaRef.current?.focus();
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [sheetOpen]);
 
     useEffect(() => {
         setItems(taskRecurrence.checklist_items);
@@ -375,7 +387,11 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                     <SheetContent
                         side="bottom"
                         showCloseButton={false}
-                        style={{ maxHeight: `calc(85dvh - ${keyboardInset}px)` }}
+                        style={{
+                            transform: keyboardInset > 0 ? `translateY(-${keyboardInset}px)` : undefined,
+                            maxHeight: "85dvh",
+                            transition: "transform 0.15s ease-out",
+                        }}
                         className="overflow-y-auto rounded-t-2xl px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
                     >
                         <SheetHeader className="p-0 mb-4">
@@ -386,6 +402,7 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
 
                         <div className="flex flex-col gap-1.5">
                             <Textarea
+                                ref={textareaRef}
                                 value={itemDescription}
                                 onChange={e => setItemDescription(e.target.value)}
                                 maxLength={maxLength}
