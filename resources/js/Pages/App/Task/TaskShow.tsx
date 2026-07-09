@@ -32,6 +32,7 @@ import {
 import type { ElementType, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useKeyboardInset } from "../../../hooks/useKeyboardInset";
 import { useLang } from "../../../hooks/useLang";
 import AppLayout from "../../../Layouts/AppLayout";
 
@@ -81,6 +82,8 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
     const [itemDescription, setItemDescription] = useState('');
     const [items, setItems] = useState<ChecklistItem[]>(taskRecurrence.checklist_items);
     const maxLength = 100;
+
+    const keyboardInset = useKeyboardInset();
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
@@ -369,7 +372,12 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                 </div>
 
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-                    <SheetContent side="bottom" showCloseButton={false} className="max-h-[85dvh] overflow-y-auto rounded-t-2xl px-4 pt-4  pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+                    <SheetContent
+                        side="bottom"
+                        showCloseButton={false}
+                        style={{ maxHeight: `calc(85dvh - ${keyboardInset}px)` }}
+                        className="overflow-y-auto rounded-t-2xl px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+                    >
                         <SheetHeader className="p-0 mb-4">
                             <SheetTitle className="text-base font-semibold text-label-foreground">
                                 {__("messages.add_item")}
@@ -382,18 +390,7 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                                 onChange={e => setItemDescription(e.target.value)}
                                 maxLength={maxLength}
                                 placeholder={__("messages.description")}
-                                className="
-                                    w-full
-                                    resize-none text-sm
-                                    max-w-full
-                                    overflow-x-hidden
-                                    rounded-t-2xl
-                                    max-h-[85dvh]
-                                    overflow-y-auto
-                                    px-4
-                                    pt-4
-                                    pb-[calc(env(safe-area-inset-bottom)+1rem)]
-                                "
+                                className="w-full resize-none text-sm max-w-full min-h-24"
                             />
                             <span className="text-right text-xs text-subtle-foreground">
                                 {itemDescription.length}/{maxLength}
