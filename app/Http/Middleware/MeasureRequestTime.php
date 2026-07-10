@@ -15,6 +15,7 @@ class MeasureRequestTime
      */
     public function handle(Request $request, Closure $next): Response
     {
+        abort(555);
         $start = hrtime(true);
 
         $response = $next($request);
