@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class MeasureRequestTime
@@ -15,22 +16,16 @@ class MeasureRequestTime
      */
     public function handle(Request $request, Closure $next): Response
     {
-        abort(555);
-        $start = hrtime(true);
+
+        $start = microtime(true);
 
         $response = $next($request);
 
-        $milliseconds = (hrtime(true) - $start) / 1_000_000;
-
-        $response->headers->set(
-            'Server-Timing',
-            sprintf('laravel;dur=%.2f', $milliseconds),
-        );
-
-        $response->headers->set(
-            'X-Laravel-Time',
-            sprintf('%.2fms', $milliseconds),
-        );
+        Log::info('Request timing', [
+            'url' => $request->path(),
+            'method' => $request->method(),
+            'duration_ms' => round((microtime(true) - $start) * 1000, 2),
+        ]);
 
         return $response;
     }
