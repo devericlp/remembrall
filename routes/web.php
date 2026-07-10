@@ -9,9 +9,11 @@ use App\Http\Controllers\Auth\RedirectProviderController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrbController;
+use App\Http\Controllers\Profile\EditProfileController;
 use App\Http\Controllers\Profile\StatisticsController;
 use App\Http\Controllers\Profile\SwitchLanguageController;
 use App\Http\Controllers\Profile\ToggleNotificationController;
+use App\Http\Controllers\Profile\UpdateProfileController;
 use App\Http\Controllers\Profile\ViewProfileController;
 use App\Http\Controllers\Task\CreateTaskController;
 use App\Http\Controllers\Task\DestroyChecklistItemController;
@@ -63,6 +65,10 @@ Route::middleware(['auth', 'web'])->group(function () {
     Route::prefix('profile')->group(function () {
         Route::get('/', ViewProfileController::class)
             ->name('profile.index');
+        Route::get('/edit', EditProfileController::class)
+            ->name('profile.edit');
+        Route::put('/update', UpdateProfileController::class)
+            ->name('profile.update');
         Route::put('/language/update', SwitchLanguageController::class)
             ->name('profile.language.update');
         Route::put('/notifications/update', ToggleNotificationController::class)

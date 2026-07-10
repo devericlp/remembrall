@@ -10,7 +10,7 @@ import { User } from "@/types/models/user";
 import { router, useHttp, usePage } from "@inertiajs/react";
 import { format, type Locale } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import { BarChart2, Bell, ChevronRight, Clock, Globe, LogOut, Mail } from "lucide-react";
+import { BarChart2, Bell, ChevronRight, Clock, Globe, LogOut, Mail, UserPen } from "lucide-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import AppLayout from "../../Layouts/AppLayout";
@@ -166,6 +166,19 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                             <span className="flex items-center gap-2">
                                 <BarChart2 className="size-4 text-gold-primary" />
                                 {__('messages.statistics')}
+                            </span>
+                            <ChevronRight className="size-4 text-hint-foreground" />
+                        </button>
+
+                        <Separator className="opacity-50" />
+
+                        <button
+                            onClick={() => router.visit('/profile/edit')}
+                            className="flex items-center justify-between w-full py-2 text-sm text-label-foreground cursor-pointer"
+                        >
+                            <span className="flex items-center gap-2">
+                                <UserPen className="size-4 text-gold-primary" />
+                                {__('messages.edit_profile')}
                             </span>
                             <ChevronRight className="size-4 text-hint-foreground" />
                         </button>

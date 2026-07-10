@@ -204,8 +204,7 @@ export default function TaskCompletedSheet({ open, achievement, onClose }: Props
                                 transition={{ delay: d(T.actions), duration: d(0.5) }}
                             >
                                 <Button
-                                    size="lg"
-                                    className="w-full cursor-pointer btn-celebrate"
+                                    className="w-full h-10 cursor-pointer btn-celebrate"
                                     onClick={onClose}
                                 >
                                     Continuar

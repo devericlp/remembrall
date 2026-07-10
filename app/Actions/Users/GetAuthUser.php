@@ -16,6 +16,7 @@ class GetAuthUser
             'name',
             'email',
             'avatar',
+            'provider_id',
             'receive_notifications',
         );
     }
