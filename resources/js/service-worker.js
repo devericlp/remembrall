@@ -30,51 +30,37 @@ registerRoute(
     }),
 );
 
-// registerRoute(
-//     ({ url }) => url.pathname.startsWith('/api/'),
-//     new NetworkFirst({
-//         cacheName: 'api-cache',
-//         plugins: [new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 5 })],
-//     }),
-// );
-
 self.addEventListener('push', (event) => {
-    if (!event.data) {
-        console.log('[SW] Push recebido sem dados.');
-        return;
-    }
+    console.log('[SW] Push recebido.');
 
-    const payload = event.data.json();
-    console.log('[SW] Push recebido:', payload);
-
-    const title = payload.title ?? 'Remembrall';
-    const options = {
-        body: payload.body ?? '',
-        icon: payload.icon ?? '/icon.png',
-        badge: payload.badge ?? '/icon.png',
-        data: payload.data ?? {},
-        vibrate: [200, 100, 200],
-    };
-
-    event.waitUntil(self.registration.showNotification(title, options));
+    event.waitUntil(
+        self.registration.showNotification('Remembrall', {
+            body: 'Teste fixo de notificação.',
+            badge: '/images/logo/icon-72.png',
+            data: {
+                url: '/home',
+            },
+        }),
+    );
 });
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const url = event.notification.data?.url ?? '/home';
-    console.log('[SW] Notificação clicada, navegando para:', url);
-
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+        self.clients.matchAll({
+            type: 'window',
+            includeUncontrolled: true,
+        }).then((clientList) => {
             for (const client of clientList) {
-                if (client.url.includes(url) && 'focus' in client) {
+                if ('focus' in client) {
+                    client.navigate('/home');
+
                     return client.focus();
                 }
             }
-            if (clients.openWindow) {
-                return clients.openWindow(url);
-            }
+
+            return self.clients.openWindow('/home');
         }),
     );
 });
