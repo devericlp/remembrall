@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { checkTaskIsDueSoon, checkTaskIsOverdue, formatDate } from "@/lib/utils";
+import { Priority } from "@/types/enums/priority";
 import { GlobalProps } from "@/types/global";
 import { TaskRecurrence } from "@/types/TaskRecurrence";
 import { DndContext, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
@@ -73,7 +74,7 @@ function SortableChecklistItem({ item, onToggle, onDelete }: { item: ChecklistIt
 
 function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
     const { __ } = useLang();
-    const { currentLanguage, priorities } = usePage<GlobalProps>().props;
+    const { currentLanguage, priorities } = usePage<GlobalProps & { priorities: Priority[] }>().props;
     const dateFormat = currentLanguage === "pt_br" ? "d/m/Y" : "m/d/Y";
     const priority = priorities.find(p => p.id === taskRecurrence.priority);
 

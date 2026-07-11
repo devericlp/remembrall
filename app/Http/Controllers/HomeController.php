@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Tasks\GetHomeStats;
 use App\Enums\Categories;
+use App\Enums\Priorities;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,7 @@ class HomeController extends Controller
             'tab' => $tab,
             'tasks' => $tasks,
             'categories' => Categories::options(),
+            'priorities' => Priorities::options(),
             'overdueCount' => $stats['overdue_count'],
             'totalPending' => $stats['total_pending'],
             'dueSoonCount' => $stats['due_soon_count'],

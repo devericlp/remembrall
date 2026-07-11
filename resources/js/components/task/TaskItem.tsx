@@ -1,6 +1,7 @@
 import { useLang } from "@/hooks/useLang";
 import { formatDate } from "@/lib/utils";
 import { Category } from "@/types/enums/category";
+import { Priority } from "@/types/enums/priority";
 import { GlobalProps } from "@/types/global";
 import { TaskRecurrence } from "@/types/TaskRecurrence";
 import { router, usePage } from "@inertiajs/react";
@@ -39,7 +40,7 @@ function getRelativeTime(dateStr: string, currentLanguage: string): string {
 }
 
 export default function TaskItem({ taskRecurrence, onComplete, onPending, category, relativeTime = false, forceCompleted = false }: ComponentProps) {
-    const { priorities, currentLanguage } = usePage<GlobalProps>().props;
+    const { priorities, currentLanguage } = usePage<GlobalProps & { priorities: Priority[] }>().props;
     const { __ } = useLang();
     const isCompleted = taskRecurrence.completed_at !== null || forceCompleted;
     const hasChecklist = taskRecurrence.checklist_total_count > 0;

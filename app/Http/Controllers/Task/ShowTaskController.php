@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Task;
 
 use App\Enums\Categories;
+use App\Enums\Priorities;
 use App\Http\Controllers\Controller;
 use App\Models\Recurrence;
 use Inertia\Inertia;
@@ -20,6 +21,7 @@ class ShowTaskController extends Controller
         $category = Categories::from($task->category);
 
         return Inertia::render('App/Task/TaskShow', [
+            'priorities' => Priorities::options(),
             'taskRecurrence' => [
                 'id' => $recurrence->id,
                 'task_id' => $recurrence->task_id,

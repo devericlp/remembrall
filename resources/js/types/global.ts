@@ -1,4 +1,4 @@
-import { Priority } from "./enums/priority";
+import '@inertiajs/core';
 import { Achievement } from "./models/achievement";
 import { User } from "./models/user";
 
@@ -13,11 +13,19 @@ export type GlobalProps = {
     };
     currentLanguage: string;
     vapidPublicKey: string;
-    priorities: Priority[];
     overdueTasksCount: number;
     orbState: OrbState;
-    flash: {
-        error: string | null;
-        newAchievements: NewAchievement[] | null;
-    };
+}
+
+export type FlashData = {
+    error: string | null;
+    message: string | null;
+    type: 'success' | 'error' | 'info' | null;
+    newAchievements: NewAchievement[] | null;
+};
+
+declare module '@inertiajs/core' {
+    interface InertiaConfig {
+        flashDataType: FlashData;
+    }
 }

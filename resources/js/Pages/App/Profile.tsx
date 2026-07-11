@@ -51,6 +51,7 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
         setData('language', language);
         router.put('/profile/language/update', { language }, {
             onError: () => toast.error(__('messages.oops_something_went_wrong_please_try_again')),
+            onSuccess: () => router.reload({ only: ["translations"] })
         });
     }
 
@@ -156,6 +157,22 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                                 }}
                             />
                         </div>
+
+                        {isSupported && data.receive_notifications && (
+                            <>
+                                <Separator className="opacity-50" />
+                                <button
+                                    onClick={() => router.post('/profile/notifications/test')}
+                                    className="flex items-center justify-between w-full py-2 text-sm text-label-foreground cursor-pointer"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Bell className="size-4 text-gold-primary" />
+                                        {__('messages.send_test_notification')}
+                                    </span>
+                                    <ChevronRight className="size-4 text-hint-foreground" />
+                                </button>
+                            </>
+                        )}
 
                         <Separator className="opacity-50" />
 

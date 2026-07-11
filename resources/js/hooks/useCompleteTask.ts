@@ -1,4 +1,4 @@
-import { GlobalProps, NewAchievement } from "@/types/global";
+import { NewAchievement } from "@/types/global";
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -13,8 +13,7 @@ export function useCompleteTask() {
         router.put(`/tasks/${id}/complete`, {}, {
             preserveScroll: true,
             onSuccess: (page) => {
-                const props = page.props as unknown as GlobalProps;
-                const achievements = props.flash?.newAchievements;
+                const achievements = page.flash?.newAchievements;
                 if (achievements?.length) {
                     setNewAchievement(achievements[0]);
                     setCompletedSheetOpen(true);

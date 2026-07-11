@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrbController;
 use App\Http\Controllers\Profile\EditProfileController;
 use App\Http\Controllers\Profile\StatisticsController;
+use App\Http\Controllers\Profile\SendTestPushNotificationController;
 use App\Http\Controllers\Profile\SwitchLanguageController;
 use App\Http\Controllers\Profile\ToggleNotificationController;
 use App\Http\Controllers\Profile\UpdateProfileController;
@@ -73,6 +74,8 @@ Route::middleware(['auth', 'web'])->group(function () {
             ->name('profile.language.update');
         Route::put('/notifications/update', ToggleNotificationController::class)
             ->name('profile.notifications.update');
+        Route::post('/notifications/test', SendTestPushNotificationController::class)
+            ->name('profile.notifications.test');
         Route::get('/statistics', StatisticsController::class)
             ->name('profile.statistics');
     });

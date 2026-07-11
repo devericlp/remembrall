@@ -16,7 +16,7 @@ export default function AuthLayout({
     centered?: boolean;
     padded?: boolean;
 }) {
-    const { flash } = usePage<GlobalProps>().props;
+    const { flash } = usePage<GlobalProps>();
     const keyboardInset = useKeyboardInset();
 
     useEffect(() => {

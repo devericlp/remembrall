@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
 
-    const { flash } = usePage<{ flash: { message: string; type: 'success' | 'error' | 'info' } }>().props;
+    const { flash } = usePage();
 
     useEffect(() => {
         if (!flash?.message) return;

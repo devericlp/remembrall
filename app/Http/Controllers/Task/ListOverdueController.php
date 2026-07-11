@@ -47,6 +47,7 @@ class ListOverdueController extends Controller
         return Inertia::render('App/Task/ListOverdue', [
             'tasks' => Inertia::scroll(fn () => $query->paginate()),
             'categories' => Categories::options(),
+            'priorities' => Priorities::options(),
             'oldestDate' => $oldestDate,
             'highPriorityCount' => $highPriorityCount,
         ]);

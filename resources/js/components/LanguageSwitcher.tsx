@@ -14,7 +14,10 @@ export default function LanguageSwitcher({ className }: { className?: string }) 
     ];
 
     function updateLanguage(language: string) {
-        router.put("/language/update", { language }, { preserveScroll: true });
+        router.put("/language/update", { language }, {
+            preserveScroll: true,
+            onSuccess: () => router.reload({ only: ["translations"] }),
+        });
     }
 
     return (

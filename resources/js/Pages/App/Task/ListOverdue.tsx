@@ -92,24 +92,26 @@ const ListOverdue: FC<ListOverduePageProps> & { layout?: (page: ReactNode) => Re
 
                         <p className="text-xs tracking-widest uppercase font-body text-muted-foreground mb-1.5">{__('messages.overdue_tasks')}</p>
                         <InfiniteScroll data="tasks">
-                            <AnimatePresence>
-                                {tasks.data.map((taskRecurrence: TaskRecurrence) => (
-                                    <motion.div
-                                        key={taskRecurrence.id}
-                                        exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
-                                        transition={{ duration: 0.35, ease: 'easeOut' }}
-                                    >
-                                        <TaskItem
-                                            taskRecurrence={taskRecurrence}
-                                            onComplete={handleCompleteTask}
-                                            onPending={() => { }}
-                                            category={categories.find(c => c.id === taskRecurrence.category)!}
-                                            relativeTime
-                                            forceCompleted={completingIds.has(taskRecurrence.id)}
-                                        />
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
+                            <div className="flex flex-col space-y-1">
+                                <AnimatePresence>
+                                    {tasks.data.map((taskRecurrence: TaskRecurrence) => (
+                                        <motion.div
+                                            key={taskRecurrence.id}
+                                            exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+                                            transition={{ duration: 0.35, ease: 'easeOut' }}
+                                        >
+                                            <TaskItem
+                                                taskRecurrence={taskRecurrence}
+                                                onComplete={handleCompleteTask}
+                                                onPending={() => { }}
+                                                category={categories.find(c => c.id === taskRecurrence.category)!}
+                                                relativeTime
+                                                forceCompleted={completingIds.has(taskRecurrence.id)}
+                                            />
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+                            </div>
                         </InfiniteScroll>
                     </>
                 ) : (
