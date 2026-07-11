@@ -31,21 +31,28 @@ registerRoute(
 );
 
 self.addEventListener('push', (event) => {
-    console.log('[SW] Push recebido.');
+    if (!event.data) {
+        console.log('[SW] Push recebido sem dados.');
+        return;
+    }
 
-    event.waitUntil(
-        self.registration.showNotification('Remembrall', {
-            body: 'Teste fixo de notificação.',
-            badge: '/images/logo/icon-72.png',
-            data: {
-                url: '/home',
-            },
-        }),
-    );
+    const { title, ...payload } = event.data.json();
+    console.log('[SW] Push recebido:', title, payload);
+
+    const options = {
+        icon: '/images/logo/icon-192.png',
+        badge: '/images/logo/icon-192.png',
+        vibrate: [200, 100, 200],
+        ...payload,
+    };
+
+    event.waitUntil(self.registration.showNotification(title ?? 'Remembrall', options));
 });
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
+
+    const url = event.notification.data?.url ?? '/home';
 
     event.waitUntil(
         self.clients.matchAll({
@@ -54,13 +61,13 @@ self.addEventListener('notificationclick', (event) => {
         }).then((clientList) => {
             for (const client of clientList) {
                 if ('focus' in client) {
-                    client.navigate('/home');
+                    client.navigate(url);
 
                     return client.focus();
                 }
             }
 
-            return self.clients.openWindow('/home');
+            return self.clients.openWindow(url);
         }),
     );
 });

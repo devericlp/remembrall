@@ -172,8 +172,6 @@ return [
     'task_title' => 'Task title',
     'task_updated_successfully' => 'Task updated successfully',
     'tasks_needing_attention' => ':count tasks needing attention',
-    'test_notification_sent' => 'Test notification sent! It should arrive shortly.',
-    'send_test_notification' => 'Send test notification',
     'the_remembrall' => 'The Remembrall',
     'thirty_minutes_before' => '30 minutes before',
     'thought_collector' => 'Thought collector',
