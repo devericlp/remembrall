@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Profile;
 
-use App\Actions\Users\UpdateNotifications;
+use App\Actions\Users\DisablePushDevice;
+use App\Actions\Users\RegisterPushDevice;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -12,17 +13,17 @@ class ToggleNotificationController extends Controller
     public function __invoke(): RedirectResponse
     {
         $enabled = request()->boolean('enabled');
+        $deviceId = request()->string('device_id')->toString();
 
-        app(UpdateNotifications::class)->handle($enabled);
-
-        if ($enabled && request()->has('subscription.endpoint')) {
-            request()->user()->updatePushSubscription(
-                request()->input('subscription.endpoint'),
-                request()->input('subscription.keys.p256dh'),
-                request()->input('subscription.keys.auth'),
+        if ($enabled && $deviceId !== '' && request()->filled('token')) {
+            app(RegisterPushDevice::class)->handle(
+                request()->user(),
+                $deviceId,
+                request()->string('token')->toString(),
+                request()->string('platform')->toString() ?: null,
             );
-        } elseif (! $enabled) {
-            request()->user()->pushSubscriptions()->delete();
+        } elseif (! $enabled && $deviceId !== '') {
+            app(DisablePushDevice::class)->handle(request()->user(), $deviceId);
         }
 
         Inertia::flash('message', __('messages.notifications_updated_successfully'));

@@ -12,7 +12,7 @@
         "php": "^8.2",
         "aws/aws-sdk-php": "^3.388",
         "inertiajs/inertia-laravel": "3.0.0-beta3",
-        "laravel-notification-channels/webpush": "^11.0",
+        "kreait/laravel-firebase": "^7.2",
         "laravel/framework": "^12.0",
         "laravel/socialite": "^5.25",
         "laravel/tinker": "^2.10.1"
@@ -78,6 +78,9 @@
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
+        ],
+        "firebase:credentials": [
+            "@php -r \"echo json_encode(json_decode(file_get_contents('storage/app/firebase/firebase-credentials.json'), true, 512, JSON_THROW_ON_ERROR), JSON_UNESCAPED_SLASHES);\""
         ]
     },
     "extra": {

@@ -3,10 +3,9 @@
 namespace App\Notifications;
 
 use App\Models\Recurrence;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
-use NotificationChannels\WebPush\WebPushChannel;
-use NotificationChannels\WebPush\WebPushMessage;
 
 class TaskDueReminderNotification extends Notification
 {
@@ -14,17 +13,16 @@ class TaskDueReminderNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database', WebPushChannel::class];
+        return ['database', FcmChannel::class];
     }
 
-    public function toWebPush(object $_notifiable, mixed $_notification): WebPushMessage
+    public function toFcm(object $_notifiable): array
     {
-        return (new WebPushMessage)
-            ->title($this->recurrence->task->title)
-            ->body('⏰ ' . Carbon::parse($this->recurrence->end_date)->format('H:i'))
-            ->icon('/icon.png')
-            ->badge('/icon.png')
-            ->data(['url' => '/tasks/' . $this->recurrence->id]);
+        return [
+            'title' => $this->recurrence->task->title,
+            'body' => '⏰ ' . Carbon::parse($this->recurrence->end_date)->format('H:i'),
+            'url' => '/tasks/' . $this->recurrence->id,
+        ];
     }
 
     public function toArray(object $_notifiable): array

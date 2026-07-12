@@ -47,7 +47,6 @@ class HandleInertiaRequests extends Middleware
             'orbState' => $orbData['orb_state'],
             'currentLanguage' => app()->getLocale(),
             'auth.user' => fn () => app(GetAuthUser::class)->handle(),
-            'vapidPublicKey' => config('webpush.vapid.public_key'),
             ...parent::share($request),
         ];
     }

@@ -9,12 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use NotificationChannels\WebPush\HasPushSubscriptions;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasPushSubscriptions, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,7 +27,6 @@ class User extends Authenticatable
         'provider_name',
         'provider_id',
         'avatar',
-        'receive_notifications',
     ];
 
     /**
@@ -69,5 +67,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Achievement::class, 'user_achievements')
             ->withPivot('earned_at')
             ->withTimestamps();
+    }
+
+    public function pushDevices(): HasMany
+    {
+        return $this->hasMany(PushDevice::class);
     }
 }

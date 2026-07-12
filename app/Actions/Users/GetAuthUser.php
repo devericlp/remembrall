@@ -17,7 +17,6 @@ class GetAuthUser
             'email',
             'avatar',
             'provider_id',
-            'receive_notifications',
         );
     }
 }

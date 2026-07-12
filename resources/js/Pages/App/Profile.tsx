@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { getPushDeviceId } from "@/lib/push-notifications";
 import { getInitials } from "@/lib/utils";
 import { GlobalProps } from "@/types/global";
 import { User } from "@/types/models/user";
@@ -15,7 +16,7 @@ import type { ReactNode } from "react";
 import { toast } from "sonner";
 import AppLayout from "../../Layouts/AppLayout";
 import { useLang } from "../../hooks/useLang";
-import { PushSubscriptionData, usePushNotifications } from "../../hooks/usePushNotifications";
+import { PushTokenData, usePushNotifications } from "../../hooks/usePushNotifications";
 
 type language = {
     key: string,
@@ -29,22 +30,27 @@ type ProfilePageProps = {
 
 const localeMap: Record<string, Locale> = { pt_br: ptBR, en: enUS };
 
-type NotificationProps = {
+type LanguageProps = {
     language: string;
-    receive_notifications: boolean;
 };
 
 function Profile({ languages, systemTime }: ProfilePageProps) {
     const { appName, auth, currentLanguage } = usePage<GlobalProps>().props;
     const { __ } = useLang();
-    const { isLoading: isPushLoading, isSupported, subscribe, unsubscribe } = usePushNotifications();
+    const {
+        isLoading: isPushLoading,
+        isSubscribed,
+        setIsSubscribed,
+        isSupported,
+        subscribe,
+        unsubscribe,
+    } = usePushNotifications();
 
     const user: User = auth.user;
     const locale = localeMap[currentLanguage] ?? enUS;
 
-    const { data, setData } = useHttp<NotificationProps>({
+    const { data, setData } = useHttp<LanguageProps>({
         language: currentLanguage,
-        receive_notifications: Boolean(user.receive_notifications),
     });
 
     function updateLanguage(language: string) {
@@ -55,17 +61,19 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
         });
     }
 
-    function updateNotifications(
-        enabled: boolean,
-        pushData?: { subscription: PushSubscriptionData },
-    ) {
-        const previous = data.receive_notifications;
+    function updateNotifications(enabled: boolean, pushData?: PushTokenData) {
+        const previous = isSubscribed;
 
-        setData('receive_notifications', enabled);
+        setIsSubscribed(enabled);
 
-        router.put('/profile/notifications/update', { enabled, ...pushData }, {
+        router.put('/profile/notifications/update', {
+            enabled,
+            device_id: pushData?.device_id ?? getPushDeviceId(),
+            token: pushData?.token,
+            platform: pushData?.platform,
+        }, {
             onError: () => {
-                setData('receive_notifications', previous);
+                setIsSubscribed(previous);
                 toast.error(__('messages.oops_something_went_wrong_please_try_again'));
             },
         });
@@ -132,17 +140,17 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                                 )}
                             </div>
                             <Switch
-                                checked={data.receive_notifications}
+                                checked={isSubscribed}
                                 disabled={!isSupported || isPushLoading}
                                 onCheckedChange={async (value) => {
                                     if (value) {
                                         try {
-                                            const subscription = await subscribe();
-                                            if (!subscription) {
+                                            const pushToken = await subscribe();
+                                            if (!pushToken) {
                                                 toast.error(__('messages.oops_something_went_wrong_please_try_again'));
                                                 return;
                                             }
-                                            updateNotifications(true, { subscription });
+                                            updateNotifications(true, pushToken);
                                         } catch {
                                             toast.error(__('messages.oops_something_went_wrong_please_try_again'));
                                         }

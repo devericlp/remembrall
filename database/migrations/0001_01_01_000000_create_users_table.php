@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('provider_name')->nullable();
             $table->string('provider_id')->nullable();
-            $table->boolean('receive_notifications')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

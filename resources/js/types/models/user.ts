@@ -6,5 +6,4 @@ export type User = {
     provider_id: string | null
     created_at: string
     updated_at: string
-    receive_notifications: boolean
 }

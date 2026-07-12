@@ -27,7 +27,7 @@ class SendTaskReminderNotification implements ShouldBeUnique, ShouldQueue
 
         $user = $this->recurrence->task->user;
 
-        if ($user->receive_notifications && $user->notify_due_soon) {
+        if ($user->pushDevices()->where('enabled', true)->exists() && $user->notify_due_soon) {
             $user->notify(new TaskDueReminderNotification($this->recurrence));
         }
     }
