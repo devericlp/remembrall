@@ -79,8 +79,8 @@
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ],
-        "firebase:credentials": [
-            "@php -r \"echo json_encode(json_decode(file_get_contents('storage/app/firebase/firebase-credentials.json'), true, 512, JSON_THROW_ON_ERROR), JSON_UNESCAPED_SLASHES);\""
+        "firebase:credentials:base64": [
+            "@php -r \"echo base64_encode(file_get_contents('storage/app/firebase/firebase-credentials.json'));\""
         ]
     },
     "extra": {

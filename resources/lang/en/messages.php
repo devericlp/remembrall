@@ -140,6 +140,8 @@ return [
     'priority' => 'Priority',
     'profile' => 'Profile',
     'profile_updated_successfully' => 'Profile updated successfully',
+    'push_not_supported' => 'Your browser does not support push notifications.',
+    'push_permission_denied' => 'Notifications are blocked in your browser. Enable them manually in the site settings to turn this on.',
     'receive_notifications_from' => 'Receive notifications from :name',
     'red_smoke_indicates_forgotten_reminders' => 'Red smoke indicates forgotten reminders',
     'reminder' => 'Reminder',

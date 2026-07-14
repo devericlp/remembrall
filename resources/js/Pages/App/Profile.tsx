@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { getPushDeviceId } from "@/lib/push-notifications";
 import { getInitials } from "@/lib/utils";
 import { GlobalProps } from "@/types/global";
 import { User } from "@/types/models/user";
@@ -16,7 +15,7 @@ import type { ReactNode } from "react";
 import { toast } from "sonner";
 import AppLayout from "../../Layouts/AppLayout";
 import { useLang } from "../../hooks/useLang";
-import { PushTokenData, usePushNotifications } from "../../hooks/usePushNotifications";
+import { usePushNotifications } from "../../hooks/usePushNotifications";
 
 type language = {
     key: string,
@@ -40,10 +39,9 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
     const {
         isLoading: isPushLoading,
         isSubscribed,
-        setIsSubscribed,
         isSupported,
-        subscribe,
-        unsubscribe,
+        permission,
+        toggle,
     } = usePushNotifications();
 
     const user: User = auth.user;
@@ -61,22 +59,18 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
         });
     }
 
-    function updateNotifications(enabled: boolean, pushData?: PushTokenData) {
-        const previous = isSubscribed;
+    async function handlePushToggle(value: boolean) {
+        const result = await toggle(value);
 
-        setIsSubscribed(enabled);
+        if (result.ok) return;
 
-        router.put('/profile/notifications/update', {
-            enabled,
-            device_id: pushData?.device_id ?? getPushDeviceId(),
-            token: pushData?.token,
-            platform: pushData?.platform,
-        }, {
-            onError: () => {
-                setIsSubscribed(previous);
-                toast.error(__('messages.oops_something_went_wrong_please_try_again'));
-            },
-        });
+        const messageKey = result.reason === 'denied'
+            ? 'messages.push_permission_denied'
+            : result.reason === 'unsupported'
+                ? 'messages.push_not_supported'
+                : 'messages.oops_something_went_wrong_please_try_again';
+
+        toast.error(__(messageKey));
     }
 
     const logout = () => {
@@ -138,31 +132,16 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                                         {__('messages.push_not_supported')}
                                     </span>
                                 )}
+                                {isSupported && permission === 'denied' && (
+                                    <span className="text-xs text-destructive pl-6">
+                                        {__('messages.push_permission_denied')}
+                                    </span>
+                                )}
                             </div>
                             <Switch
                                 checked={isSubscribed}
                                 disabled={!isSupported || isPushLoading}
-                                onCheckedChange={async (value) => {
-                                    if (value) {
-                                        try {
-                                            const pushToken = await subscribe();
-                                            if (!pushToken) {
-                                                toast.error(__('messages.oops_something_went_wrong_please_try_again'));
-                                                return;
-                                            }
-                                            updateNotifications(true, pushToken);
-                                        } catch {
-                                            toast.error(__('messages.oops_something_went_wrong_please_try_again'));
-                                        }
-                                    } else {
-                                        try {
-                                            await unsubscribe();
-                                        } catch {
-                                            // unsubscribe failure is non-blocking — server handles cleanup
-                                        }
-                                        updateNotifications(false);
-                                    }
-                                }}
+                                onCheckedChange={handlePushToggle}
                             />
                         </div>
 

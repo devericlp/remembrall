@@ -1,63 +1,98 @@
 import { deletePushToken, getPushDeviceId, requestPushToken } from '@/lib/push-notifications';
-import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { router } from '@inertiajs/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-export type PushTokenData = {
+export type PushPermissionState = 'granted' | 'denied' | 'default' | 'unsupported';
+export type ToggleFailureReason = 'unsupported' | 'denied' | 'error';
+export type ToggleResult = { ok: true } | { ok: false; reason: ToggleFailureReason };
+
+function putNotificationsUpdate(payload: {
+    enabled: boolean;
     device_id: string;
-    token: string;
-    platform: string;
-};
+    token?: string;
+    platform?: string;
+}): Promise<boolean> {
+    return new Promise((resolve) => {
+        router.put('/profile/notifications/update', payload, {
+            onSuccess: () => resolve(true),
+            onError: () => resolve(false),
+        });
+    });
+}
 
 export function usePushNotifications() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(false);
+    const [permission, setPermission] = useState<PushPermissionState>('unsupported');
+    const isBusyRef = useRef(false);
 
     const isSupported = 'serviceWorker' in navigator && 'Notification' in window;
 
-    const refreshStatus = useCallback(async () => {
-        if (!isSupported) return;
+    useEffect(() => {
+        if (!isSupported) {
+            setPermission('unsupported');
+            return;
+        }
+
+        setPermission(Notification.permission);
+        setIsSubscribed(Notification.permission === 'granted');
+    }, [isSupported]);
+
+    const toggle = useCallback(async (enabled: boolean): Promise<ToggleResult> => {
+        if (isBusyRef.current) {
+            return { ok: false, reason: 'error' };
+        }
+
+        if (!isSupported) {
+            return { ok: false, reason: 'unsupported' };
+        }
+
+        isBusyRef.current = true;
+        setIsLoading(true);
 
         try {
-            const { data } = await axios.get('/profile/notifications/status', {
-                params: { device_id: getPushDeviceId() },
+            if (enabled) {
+                const token = await requestPushToken();
+                const permissionAfterRequest: NotificationPermission = Notification.permission;
+                setPermission(permissionAfterRequest);
+
+                if (!token) {
+                    return { ok: false, reason: permissionAfterRequest === 'denied' ? 'denied' : 'error' };
+                }
+
+                const success = await putNotificationsUpdate({
+                    enabled: true,
+                    device_id: getPushDeviceId(),
+                    token,
+                    platform: 'web',
+                });
+
+                if (!success) {
+                    return { ok: false, reason: 'error' };
+                }
+
+                setIsSubscribed(true);
+                return { ok: true };
+            }
+
+            await deletePushToken().catch(() => {});
+
+            const success = await putNotificationsUpdate({
+                enabled: false,
+                device_id: getPushDeviceId(),
             });
-            setIsSubscribed(Boolean(data.enabled));
-        } catch {
-            // keep last known state
+
+            if (!success) {
+                return { ok: false, reason: 'error' };
+            }
+
+            setIsSubscribed(false);
+            return { ok: true };
+        } finally {
+            setIsLoading(false);
+            isBusyRef.current = false;
         }
     }, [isSupported]);
 
-    useEffect(() => {
-        refreshStatus();
-    }, [refreshStatus]);
-
-    const subscribe = useCallback(async (): Promise<PushTokenData | null> => {
-        setIsLoading(true);
-        try {
-            const token = await requestPushToken();
-
-            if (!token) return null;
-
-            return {
-                device_id: getPushDeviceId(),
-                token,
-                platform: 'web',
-            };
-        } catch {
-            return null;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    const unsubscribe = useCallback(async (): Promise<void> => {
-        setIsLoading(true);
-        try {
-            await deletePushToken();
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    return { isLoading, isSubscribed, setIsSubscribed, isSupported, subscribe, unsubscribe };
+    return { isLoading, isSubscribed, isSupported, permission, toggle };
 }

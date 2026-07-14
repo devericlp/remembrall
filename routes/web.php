@@ -10,7 +10,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OrbController;
 use App\Http\Controllers\Profile\EditProfileController;
-use App\Http\Controllers\Profile\ShowPushDeviceStatusController;
 use App\Http\Controllers\Profile\StatisticsController;
 use App\Http\Controllers\Profile\SwitchLanguageController;
 use App\Http\Controllers\Profile\ToggleNotificationController;
@@ -74,8 +73,6 @@ Route::middleware(['auth', 'web'])->group(function () {
             ->name('profile.language.update');
         Route::put('/notifications/update', ToggleNotificationController::class)
             ->name('profile.notifications.update');
-        Route::get('/notifications/status', ShowPushDeviceStatusController::class)
-            ->name('profile.notifications.status');
         Route::get('/statistics', StatisticsController::class)
             ->name('profile.statistics');
     });

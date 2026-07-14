@@ -19,18 +19,21 @@ export async function requestPushToken(): Promise<string | null> {
         !('Notification' in window) ||
         !('serviceWorker' in navigator)
     ) {
+        console.warn('[Push] Notification API or serviceWorker not available in this browser.');
         return null;
     }
 
     const permission = await Notification.requestPermission();
 
     if (permission !== 'granted') {
+        console.warn(`[Push] Notification permission is "${permission}" (not granted). If it's "denied", the user must reset it in the browser's site settings.`);
         return null;
     }
 
     const messaging = await getFirebaseMessaging();
 
     if (!messaging) {
+        console.warn('[Push] getFirebaseMessaging() returned null — firebase/messaging isSupported() reported this browser/context as unsupported.');
         return null;
     }
 
