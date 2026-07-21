@@ -1,9 +1,9 @@
 <?php
 
-use App\Actions\Tasks\CheckDueTaskReminders;
+use App\Console\Commands\SendDueTaskReminders;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::call(fn () => app(CheckDueTaskReminders::class)->handle())
-    ->everyFifteenMinutes()
-    ->name('check-due-task-reminders')
+Schedule::command(SendDueTaskReminders::class)
+    ->everyMinute()
+    ->name('send-due-task-reminders')
     ->withoutOverlapping();

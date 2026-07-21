@@ -22,11 +22,14 @@ class ToggleNotificationController extends Controller
                 request()->string('token')->toString(),
                 request()->string('platform')->toString() ?: null,
             );
+
+            // No flash message here: the frontend confirms activation with a
+            // real push notification instead of the usual toast.
         } elseif (! $enabled && $deviceId !== '') {
             app(DisablePushDevice::class)->handle(request()->user(), $deviceId);
-        }
 
-        Inertia::flash('message', __('messages.notifications_updated_successfully'));
+            Inertia::flash('message', __('messages.notifications_updated_successfully'));
+        }
 
         return back();
     }

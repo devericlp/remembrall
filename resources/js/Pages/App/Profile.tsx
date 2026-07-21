@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { showLocalPushNotification } from "@/lib/push-notifications";
 import { getInitials } from "@/lib/utils";
 import { GlobalProps } from "@/types/global";
 import { User } from "@/types/models/user";
@@ -62,7 +63,13 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
     async function handlePushToggle(value: boolean) {
         const result = await toggle(value);
 
-        if (result.ok) return;
+        if (result.ok) {
+            if (value) {
+                showLocalPushNotification(appName, __('messages.push_notifications_activated_body', { name: appName }));
+            }
+
+            return;
+        }
 
         const messageKey = result.reason === 'denied'
             ? 'messages.push_permission_denied'

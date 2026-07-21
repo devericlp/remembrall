@@ -116,6 +116,7 @@ return [
     'notification' => 'Notification',
     'notifications' => 'Notifications',
     'notifications_updated_successfully' => 'Notifications updated successfully',
+    'push_notifications_activated_body' => 'You will receive notifications from :name here.',
     'ok' => 'Ok',
     'oldest_overdue' => 'Oldest',
     'one_hour_before' => '1 hour before',

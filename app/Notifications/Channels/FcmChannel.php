@@ -25,6 +25,12 @@ class FcmChannel
         $devices = $notifiable->pushDevices()->where('enabled', true)->get();
 
         foreach ($devices as $device) {
+            $context = [
+                'device_id' => $device->device_id,
+                'user_id' => $device->user_id,
+                'notification' => $notification::class,
+            ];
+
             $message = CloudMessage::new()
                 ->withData($payload)
                 ->withToken($device->token);
@@ -33,6 +39,8 @@ class FcmChannel
                 $this->messaging->send($message);
 
                 $device->update(['last_success_at' => now()]);
+
+                Log::channel('reminders')->info('fcm.send.success', $context);
             } catch (NotFound|InvalidArgument $e) {
                 $device->update([
                     'enabled' => false,
@@ -40,17 +48,21 @@ class FcmChannel
                     'last_error_code' => class_basename($e),
                     'last_error_message' => $e->getMessage(),
                 ]);
-            } catch (MessagingException $e) {
-                Log::warning('FCM notification failed', [
-                    'device_id' => $device->device_id,
-                    'user_id' => $device->user_id,
+
+                Log::channel('reminders')->warning('fcm.send.invalid_token', [
+                    ...$context,
                     'error' => $e->getMessage(),
                 ]);
-
+            } catch (MessagingException $e) {
                 $device->update([
                     'last_failure_at' => now(),
                     'last_error_code' => class_basename($e),
                     'last_error_message' => $e->getMessage(),
+                ]);
+
+                Log::channel('reminders')->error('fcm.send.failed', [
+                    ...$context,
+                    'error' => $e->getMessage(),
                 ]);
             }
         }

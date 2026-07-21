@@ -55,3 +55,18 @@ export async function deletePushToken(): Promise<void> {
 
     await deleteToken(messaging);
 }
+
+export async function showLocalPushNotification(title: string, body: string): Promise<void> {
+    if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') {
+        return;
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+
+    await registration.showNotification(title, {
+        body,
+        icon: '/images/logo/icon-192.png',
+        badge: '/images/logo/icon-192.png',
+        vibrate: [200, 100, 200],
+    });
+}
