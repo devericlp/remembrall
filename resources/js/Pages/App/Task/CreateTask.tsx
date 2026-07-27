@@ -16,12 +16,12 @@ import { RecurrenceType } from "@/types/enums/recurrenceType";
 import { ReminderInterval } from "@/types/enums/reminderInterval";
 import { WeekDays } from "@/types/enums/weekDays";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { addDays, format, isSameDay, startOfDay } from "date-fns";
+import { addDays, format, isSameDay, startOfDay, subMinutes } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
 import { motion } from 'framer-motion';
 import { AlignLeft, Bell, Calendar, CheckCircle2, ChevronDownIcon, Clock, FileText, Folder, RefreshCw, Tag } from "lucide-react";
 import { RadioGroup } from "radix-ui";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useLang } from "../../../hooks/useLang";
 import AppLayout from "../../../Layouts/AppLayout";
@@ -37,6 +37,12 @@ type HomePageProps = {
     weekDays: WeekDays[],
     recurrenceTypes: RecurrenceType[],
 }
+
+const REMINDER_MINUTES_BEFORE: Record<string, number> = {
+    fifteen_minutes_before: 15,
+    thirty_minutes_before: 30,
+    one_hour_before: 60,
+};
 
 type FormProps = {
     title: string,
@@ -67,6 +73,27 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
     const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
     const [isReminderOpen, setIsReminderOpen] = useState<boolean>(false);
     const [isRecurrenceOpen, setIsRecurrenceOpen] = useState<boolean>(false);
+    const calendarWrapperRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!isDateOpen) return;
+
+        const node = calendarWrapperRef.current;
+        if (!node) return;
+
+        // Alguns iPhones físicos (Safari/WebKit) não repintam corretamente a área de
+        // recorte do calendário quando ele é revelado pelo Collapsible, fazendo as
+        // últimas linhas ficarem sobrepostas aos campos seguintes. Forçamos um reflow
+        // logo após a abertura para corrigir a pintura.
+        const rafId = requestAnimationFrame(() => {
+            node.style.transform = 'translateZ(0)';
+            requestAnimationFrame(() => {
+                node.style.transform = '';
+            });
+        });
+
+        return () => cancelAnimationFrame(rafId);
+    }, [isDateOpen]);
 
     const { data, setData, post, processing, errors, reset } = useForm<FormProps>({
         title: "",
@@ -117,6 +144,19 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
     const selectedPriority = priorities.find(p => p.id === data.priority);
     const selectedCategory = categories.find(c => c.id === data.category);
     const selectedReminder = reminders.find(r => r.id === data.reminderInterval);
+
+    const reminderAlertLabel = (() => {
+        if (!data.reminderInterval || data.reminderInterval === 'no_reminder') return undefined;
+        if (!data.date || !data.startTime) return undefined;
+
+        const minutesBefore = REMINDER_MINUTES_BEFORE[data.reminderInterval];
+        if (!minutesBefore) return undefined;
+
+        const taskDateTime = new Date(`${data.date}T${data.startTime}`);
+        const alertDateTime = subMinutes(taskDateTime, minutesBefore);
+
+        return format(alertDateTime, "HH:mm");
+    })();
 
     function save(e: React.SyntheticEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -279,14 +319,16 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                                 </button>
                                             </CollapsibleTrigger>
                                             <CollapsibleContent className="pb-2">
-                                                <CalendarPicker
-                                                    mode="single"
-                                                    selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
-                                                    onSelect={d => { if (d) { setData('date', format(d, 'yyyy-MM-dd')); setIsDateOpen(false); } }}
-                                                    locale={currentLanguage === 'pt_br' ? ptBR : enUS}
-                                                    className="w-full"
-                                                    classNames={{ root: "w-full" }}
-                                                />
+                                                <div ref={calendarWrapperRef} className="overflow-hidden rounded-xl">
+                                                    <CalendarPicker
+                                                        mode="single"
+                                                        selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
+                                                        onSelect={d => { if (d) { setData('date', format(d, 'yyyy-MM-dd')); setIsDateOpen(false); } }}
+                                                        locale={currentLanguage === 'pt_br' ? ptBR : enUS}
+                                                        className="w-full"
+                                                        classNames={{ root: "w-full" }}
+                                                    />
+                                                </div>
                                             </CollapsibleContent>
                                         </Collapsible>
                                         <Separator className="mx-4" />
@@ -388,7 +430,12 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                         <button className="flex items-center gap-3 w-full px-4 py-3.5 hover:bg-surface-secondary/50 transition-colors text-left">
                                             <Bell className="w-4 h-4 text-nav-icon shrink-0" />
                                             <span className="flex-1 font-body text-sm text-foreground">{__('messages.reminder')}</span>
-                                            <span className="font-body text-sm text-muted-foreground">{selectedReminder?.title}</span>
+                                            <span className="font-body text-sm text-muted-foreground whitespace-nowrap">
+                                                {selectedReminder?.title}
+                                                {reminderAlertLabel && (
+                                                    <span className="text-[10px] text-muted-foreground/70"> ({reminderAlertLabel})</span>
+                                                )}
+                                            </span>
                                             <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isReminderOpen ? 'rotate-180' : ''}`} />
                                         </button>
                                     </CollapsibleTrigger>

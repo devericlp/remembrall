@@ -33,13 +33,14 @@ Route::get('/service-worker.js', function () {
     return response()->file(public_path('build/service-worker.js'), [
         'Content-Type' => 'application/javascript',
         'Service-Worker-Allowed' => '/',
+        'Cache-Control' => 'no-cache',
     ]);
 });
 
+Route::inertia('/', 'Auth/SplashScreen');
 Route::put('/language/update', SwitchLanguageController::class)->name('language.update');
 
 Route::middleware('guest')->group(function () {
-    Route::inertia('/', 'Auth/SplashScreen');
     Route::inertia('/login', 'Auth/Login')->name('auth.login');
     Route::post('/login', LoginController::class)->middleware('throttle:10,1')->name('auth.login.store');
     Route::inertia('/onboarding', 'Auth/Onboarding')->name('auth.onboarding');

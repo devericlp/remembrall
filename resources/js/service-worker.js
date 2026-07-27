@@ -64,6 +64,17 @@ registerRoute(
     }),
 );
 
+// Imagens estáticas em public/images (ícones, conquistas, ilustrações) não
+// passam pelo build do Vite, então não entram no precache do __WB_MANIFEST.
+// Cacheamos em runtime, na primeira requisição.
+registerRoute(
+    ({ url, request }) => request.destination === 'image' && url.pathname.startsWith('/images/'),
+    new CacheFirst({
+        cacheName: 'static-images-cache',
+        plugins: [new ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 365 })],
+    }),
+);
+
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 

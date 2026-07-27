@@ -20,7 +20,7 @@ class LoginController extends Controller
             $request->string('password')->value(),
         );
 
-        Auth::login($user, $request->boolean('remember'));
+        Auth::login($user, true);
 
         $request->session()->regenerate();
 

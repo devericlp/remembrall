@@ -24,7 +24,15 @@
                 navigator.serviceWorker.register('/service-worker.js', {
                         scope: '/'
                     })
-                    .then(reg => console.log('[SW] Registrado com escopo:', reg.scope))
+                    .then(reg => {
+                        console.log('[SW] Registrado com escopo:', reg.scope);
+
+                        document.addEventListener('visibilitychange', () => {
+                            if (document.visibilityState === 'visible') {
+                                reg.update();
+                            }
+                        });
+                    })
                     .catch(err => console.error('[SW] Erro ao registrar:', err));
             });
         }

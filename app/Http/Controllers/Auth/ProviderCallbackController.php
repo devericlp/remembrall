@@ -22,7 +22,7 @@ class ProviderCallbackController extends Controller
             return redirect()->route('auth.login');
         }
 
-        Auth::login($user);
+        Auth::login($user, true);
 
         return redirect('/home');
     }
