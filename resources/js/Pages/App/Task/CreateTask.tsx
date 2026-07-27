@@ -21,7 +21,7 @@ import { enUS, ptBR } from "date-fns/locale";
 import { motion } from 'framer-motion';
 import { AlignLeft, Bell, Calendar, CheckCircle2, ChevronDownIcon, Clock, FileText, Folder, RefreshCw, Tag } from "lucide-react";
 import { RadioGroup } from "radix-ui";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { useLang } from "../../../hooks/useLang";
 import AppLayout from "../../../Layouts/AppLayout";
@@ -73,27 +73,6 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
     const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false);
     const [isReminderOpen, setIsReminderOpen] = useState<boolean>(false);
     const [isRecurrenceOpen, setIsRecurrenceOpen] = useState<boolean>(false);
-    const calendarWrapperRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!isDateOpen) return;
-
-        const node = calendarWrapperRef.current;
-        if (!node) return;
-
-        // Alguns iPhones físicos (Safari/WebKit) não repintam corretamente a área de
-        // recorte do calendário quando ele é revelado pelo Collapsible, fazendo as
-        // últimas linhas ficarem sobrepostas aos campos seguintes. Forçamos um reflow
-        // logo após a abertura para corrigir a pintura.
-        const rafId = requestAnimationFrame(() => {
-            node.style.transform = 'translateZ(0)';
-            requestAnimationFrame(() => {
-                node.style.transform = '';
-            });
-        });
-
-        return () => cancelAnimationFrame(rafId);
-    }, [isDateOpen]);
 
     const { data, setData, post, processing, errors, reset } = useForm<FormProps>({
         title: "",
@@ -318,8 +297,8 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                                     <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isDateOpen ? 'rotate-180' : ''}`} />
                                                 </button>
                                             </CollapsibleTrigger>
-                                            <CollapsibleContent className="pb-2">
-                                                <div ref={calendarWrapperRef} className="overflow-hidden rounded-xl">
+                                            {isDateOpen && (
+                                                <div className="pb-2">
                                                     <CalendarPicker
                                                         mode="single"
                                                         selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
@@ -329,7 +308,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                                         classNames={{ root: "w-full" }}
                                                     />
                                                 </div>
-                                            </CollapsibleContent>
+                                            )}
                                         </Collapsible>
                                         <Separator className="mx-4" />
                                     </>
