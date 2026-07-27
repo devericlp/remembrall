@@ -6,11 +6,10 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { formatDate, getDefaultTimeRange } from "@/lib/utils";
+import { cn, formatDate, getDefaultTimeRange } from "@/lib/utils";
 import { Category } from "@/types/enums/category";
 import { Priority } from "@/types/enums/priority";
 import { RecurrenceType } from "@/types/enums/recurrenceType";
@@ -287,29 +286,64 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
 
                                 <Separator className="mx-4" />
 
-                                {step === 'simple' && (
+                                {step === "simple" && (
                                     <>
-                                        <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
-                                            <PopoverTrigger asChild>
-                                                <button className="flex items-center gap-3 w-full px-4 py-3.5 hover:bg-surface-secondary/50 transition-colors text-left">
-                                                    <Calendar className="w-4 h-4 text-nav-icon shrink-0" />
-                                                    <span className="flex-1 font-body text-sm text-foreground">{__('messages.date')}</span>
-                                                    <span className="font-body text-sm text-muted-foreground">{timeLabel}</span>
-                                                    <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isDateOpen ? 'rotate-180' : ''}`} />
+                                        <Collapsible
+                                            open={isDateOpen}
+                                            onOpenChange={setIsDateOpen}
+                                            className="w-full min-w-0"
+                                        >
+                                            <CollapsibleTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    className="flex w-full min-w-0 items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-secondary/50"
+                                                >
+                                                    <Calendar className="size-4 shrink-0 text-nav-icon" />
+
+                                                    <span className="min-w-0 flex-1 font-body text-sm text-foreground">
+                                                        {__("messages.date")}
+                                                    </span>
+
+                                                    <span className="shrink-0 font-body text-sm text-muted-foreground">
+                                                        {timeLabel}
+                                                    </span>
+
+                                                    <ChevronDownIcon
+                                                        className={cn(
+                                                            "ml-1 size-4 shrink-0 text-muted-foreground transition-transform",
+                                                            isDateOpen && "rotate-180"
+                                                        )}
+                                                    />
                                                 </button>
-                                            </PopoverTrigger>
-                                            <PopoverContent align="center" className="w-(--radix-popover-trigger-width) p-2">
-                                                <CalendarPicker
-                                                    mode="single"
-                                                    selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
-                                                    onSelect={d => { if (d) { setData('date', format(d, 'yyyy-MM-dd')); setIsDateOpen(false); } }}
-                                                    locale={currentLanguage === 'pt_br' ? ptBR : enUS}
-                                                    className="w-full"
-                                                    classNames={{ root: "w-full" }}
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                        <Separator className="mx-4" />
+                                            </CollapsibleTrigger>
+
+                                            <CollapsibleContent className="w-full min-w-0 overflow-hidden">
+                                                <div className="w-full min-w-0 px-2 pb-3">
+                                                    <CalendarPicker
+                                                        mode="single"
+                                                        selected={
+                                                            data.date
+                                                                ? new Date(`${data.date}T00:00:00`)
+                                                                : undefined
+                                                        }
+                                                        onSelect={(date) => {
+                                                            if (!date) {
+                                                                return
+                                                            }
+
+                                                            setData("date", format(date, "yyyy-MM-dd"))
+                                                            setIsDateOpen(false)
+                                                        }}
+                                                        locale={currentLanguage === "pt_br" ? ptBR : enUS}
+                                                        className="w-full min-w-0"
+                                                    />
+                                                </div>
+                                            </CollapsibleContent>
+                                        </Collapsible>
+
+                                        <div className="px-4">
+                                            <Separator />
+                                        </div>
                                     </>
                                 )}
 
