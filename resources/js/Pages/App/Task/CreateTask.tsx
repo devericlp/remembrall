@@ -6,6 +6,7 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
@@ -288,16 +289,16 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
 
                                 {step === 'simple' && (
                                     <>
-                                        <Collapsible open={isDateOpen} onOpenChange={setIsDateOpen}>
-                                            <CollapsibleTrigger asChild>
+                                        <Popover open={isDateOpen} onOpenChange={setIsDateOpen}>
+                                            <PopoverTrigger asChild>
                                                 <button className="flex items-center gap-3 w-full px-4 py-3.5 hover:bg-surface-secondary/50 transition-colors text-left">
                                                     <Calendar className="w-4 h-4 text-nav-icon shrink-0" />
                                                     <span className="flex-1 font-body text-sm text-foreground">{__('messages.date')}</span>
                                                     <span className="font-body text-sm text-muted-foreground">{timeLabel}</span>
                                                     <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isDateOpen ? 'rotate-180' : ''}`} />
                                                 </button>
-                                            </CollapsibleTrigger>
-                                            <CollapsibleContent className="pb-2">
+                                            </PopoverTrigger>
+                                            <PopoverContent align="center" className="w-(--radix-popover-trigger-width) p-2">
                                                 <CalendarPicker
                                                     mode="single"
                                                     selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
@@ -306,8 +307,8 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                                     className="w-full"
                                                     classNames={{ root: "w-full" }}
                                                 />
-                                            </CollapsibleContent>
-                                        </Collapsible>
+                                            </PopoverContent>
+                                        </Popover>
                                         <Separator className="mx-4" />
                                     </>
                                 )}
