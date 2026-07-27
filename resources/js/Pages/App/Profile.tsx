@@ -2,7 +2,6 @@ import PageHeader from "@/components/layout/PageHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { showLocalPushNotification } from "@/lib/push-notifications";
 import { getInitials } from "@/lib/utils";
@@ -124,7 +123,7 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                             </Select>
                         </div>
 
-                        <Separator className="opacity-50" />
+                        <div className="h-px bg-border" />
                         <div className="flex items-center justify-between py-2">
                             <div className="flex flex-col gap-0.5">
                                 <span className="flex items-center gap-2 text-sm text-label-foreground">
@@ -152,7 +151,7 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                             />
                         </div>
 
-                        <Separator className="opacity-50" />
+                        <div className="h-px bg-border" />
 
                         <button
                             onClick={() => router.visit('/profile/statistics')}
@@ -165,7 +164,7 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                             <ChevronRight className="size-4 text-hint-foreground" />
                         </button>
 
-                        <Separator className="opacity-50" />
+                        <div className="h-px bg-border" />
 
                         <button
                             onClick={() => router.visit('/profile/edit')}
@@ -178,7 +177,7 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
                             <ChevronRight className="size-4 text-hint-foreground" />
                         </button>
 
-                        <Separator className="opacity-50" />
+                        <div className="h-px bg-border" />
 
                         <button
                             onClick={logout}

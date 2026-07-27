@@ -6,7 +6,6 @@ import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, formatDate, getDefaultTimeRange } from "@/lib/utils";
@@ -284,7 +283,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                     </CollapsibleContent>
                                 </Collapsible>
 
-                                <Separator className="mx-4" />
+                                <div className="mx-4 h-px bg-border" />
 
                                 {step === "simple" && (
                                     <>
@@ -341,9 +340,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                             </CollapsibleContent>
                                         </Collapsible>
 
-                                        <div className="px-4">
-                                            <Separator />
-                                        </div>
+                                        <div className="mx-4 h-px bg-border" />
                                     </>
                                 )}
 
@@ -381,7 +378,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                     </CollapsibleContent>
                                 </Collapsible>
 
-                                <Separator className="mx-4" />
+                                <div className="mx-4 h-px bg-border" />
 
                                 <Collapsible open={isPriorityOpen} onOpenChange={setIsPriorityOpen}>
                                     <CollapsibleTrigger asChild>
@@ -408,7 +405,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                     </CollapsibleContent>
                                 </Collapsible>
 
-                                <Separator className="mx-4" />
+                                <div className="mx-4 h-px bg-border" />
 
                                 <Collapsible open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
                                     <CollapsibleTrigger asChild>
@@ -435,7 +432,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                     </CollapsibleContent>
                                 </Collapsible>
 
-                                <Separator className="mx-4" />
+                                <div className="mx-4 h-px bg-border" />
 
                                 <Collapsible open={isReminderOpen} onOpenChange={setIsReminderOpen}>
                                     <CollapsibleTrigger asChild>
@@ -469,7 +466,7 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
 
                                 {step === 'routine' && (
                                     <>
-                                        <Separator className="mx-4" />
+                                        <div className="mx-4 h-px bg-border" />
                                         <Collapsible open={isRecurrenceOpen} onOpenChange={setIsRecurrenceOpen}>
                                             <CollapsibleTrigger asChild>
                                                 <button className="flex items-center gap-3 w-full px-4 py-3.5 hover:bg-surface-secondary/50 transition-colors text-left">
