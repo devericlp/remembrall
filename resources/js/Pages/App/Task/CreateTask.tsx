@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar as CalendarPicker } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate, getDefaultTimeRange } from "@/lib/utils";
@@ -297,18 +297,16 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
                                                     <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isDateOpen ? 'rotate-180' : ''}`} />
                                                 </button>
                                             </CollapsibleTrigger>
-                                            {isDateOpen && (
-                                                <div className="pb-2">
-                                                    <CalendarPicker
-                                                        mode="single"
-                                                        selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
-                                                        onSelect={d => { if (d) { setData('date', format(d, 'yyyy-MM-dd')); setIsDateOpen(false); } }}
-                                                        locale={currentLanguage === 'pt_br' ? ptBR : enUS}
-                                                        className="w-full"
-                                                        classNames={{ root: "w-full" }}
-                                                    />
-                                                </div>
-                                            )}
+                                            <CollapsibleContent className="pb-2">
+                                                <CalendarPicker
+                                                    mode="single"
+                                                    selected={data.date ? new Date(data.date + 'T00:00:00') : undefined}
+                                                    onSelect={d => { if (d) { setData('date', format(d, 'yyyy-MM-dd')); setIsDateOpen(false); } }}
+                                                    locale={currentLanguage === 'pt_br' ? ptBR : enUS}
+                                                    className="w-full"
+                                                    classNames={{ root: "w-full" }}
+                                                />
+                                            </CollapsibleContent>
                                         </Collapsible>
                                         <Separator className="mx-4" />
                                     </>
@@ -436,68 +434,68 @@ const CreateTask: React.FC<HomePageProps> & { layout?: (page: ReactNode) => Reac
 
                                 {step === 'routine' && (
                                     <>
-                                    <Separator className="mx-4" />
-                                    <Collapsible open={isRecurrenceOpen} onOpenChange={setIsRecurrenceOpen}>
-                                        <CollapsibleTrigger asChild>
-                                            <button className="flex items-center gap-3 w-full px-4 py-3.5 hover:bg-surface-secondary/50 transition-colors text-left">
-                                                <RefreshCw className="w-4 h-4 text-nav-icon shrink-0" />
-                                                <span className="flex-1 font-body text-sm text-foreground">{__('messages.repeat')}</span>
-                                                <span className="font-body text-sm text-muted-foreground">{recurrenceLabel}</span>
-                                                <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isRecurrenceOpen ? 'rotate-180' : ''}`} />
-                                            </button>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent className="px-4 pb-4">
-                                            <RadioGroup.Root value={data.recurrence} onValueChange={(value: string) => setRecurrence(value)} className="flex flex-wrap gap-2">
-                                                {recurrenceTypes.map(recurrence => (
-                                                    <RadioGroup.Item key={recurrence.id} value={recurrence.id}>
-                                                        <RadioGroup.Indicator />
-                                                        <Badge variant="outline" className={`p-4 cursor-pointer ${data.recurrence === recurrence.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface-tertiary border-border/60 text-foreground hover:bg-surface-elevated'}`}>
-                                                            {recurrence.title}
-                                                        </Badge>
-                                                    </RadioGroup.Item>
-                                                ))}
-                                            </RadioGroup.Root>
-                                            {data.recurrence === 'monthly' && (
-                                                <div className="mt-4">
-                                                    <p className="text-[10px] text-muted-foreground mb-1 font-body">{__('messages.week_day')}</p>
-                                                    <RadioGroup.Root value={data.monthDay?.toString()} onValueChange={(value: string) => setData('monthDay', parseInt(value))} className="flex flex-wrap gap-2 max-h-36 overflow-y-auto mt-2">
-                                                        {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
-                                                            <RadioGroup.Item key={d} value={d.toString()}>
-                                                                <RadioGroup.Indicator />
-                                                                <Badge variant="outline" className={`p-4 cursor-pointer ${data.monthDay === d ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface-tertiary border-border/60 text-foreground hover:bg-surface-elevated'}`}>
-                                                                    {d}
-                                                                </Badge>
-                                                            </RadioGroup.Item>
-                                                        ))}
-                                                    </RadioGroup.Root>
-                                                </div>
-                                            )}
-                                            {data.recurrence === 'weekly' && (
-                                                <div className="mt-4">
-                                                    <p className="text-[10px] text-muted-foreground mb-1 font-body">{__('messages.week_day')}</p>
-                                                    <div className="flex flex-wrap gap-2 mt-2">
-                                                        {weekDays.map(weekDay => (
-                                                            <button
-                                                                key={weekDay.id}
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    const current = data.weekDay ?? [];
-                                                                    setData('weekDay', current.includes(weekDay.id)
-                                                                        ? current.filter(d => d !== weekDay.id)
-                                                                        : [...current, weekDay.id]
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <Badge variant="outline" className={`p-4 cursor-pointer ${data.weekDay?.includes(weekDay.id) ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface-tertiary border-border/60 text-foreground hover:bg-surface-elevated'}`}>
-                                                                    {weekDay.title}
-                                                                </Badge>
-                                                            </button>
-                                                        ))}
+                                        <Separator className="mx-4" />
+                                        <Collapsible open={isRecurrenceOpen} onOpenChange={setIsRecurrenceOpen}>
+                                            <CollapsibleTrigger asChild>
+                                                <button className="flex items-center gap-3 w-full px-4 py-3.5 hover:bg-surface-secondary/50 transition-colors text-left">
+                                                    <RefreshCw className="w-4 h-4 text-nav-icon shrink-0" />
+                                                    <span className="flex-1 font-body text-sm text-foreground">{__('messages.repeat')}</span>
+                                                    <span className="font-body text-sm text-muted-foreground">{recurrenceLabel}</span>
+                                                    <ChevronDownIcon className={`w-4 h-4 text-muted-foreground shrink-0 ml-1 transition-transform ${isRecurrenceOpen ? 'rotate-180' : ''}`} />
+                                                </button>
+                                            </CollapsibleTrigger>
+                                            <CollapsibleContent className="px-4 pb-4">
+                                                <RadioGroup.Root value={data.recurrence} onValueChange={(value: string) => setRecurrence(value)} className="flex flex-wrap gap-2">
+                                                    {recurrenceTypes.map(recurrence => (
+                                                        <RadioGroup.Item key={recurrence.id} value={recurrence.id}>
+                                                            <RadioGroup.Indicator />
+                                                            <Badge variant="outline" className={`p-4 cursor-pointer ${data.recurrence === recurrence.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface-tertiary border-border/60 text-foreground hover:bg-surface-elevated'}`}>
+                                                                {recurrence.title}
+                                                            </Badge>
+                                                        </RadioGroup.Item>
+                                                    ))}
+                                                </RadioGroup.Root>
+                                                {data.recurrence === 'monthly' && (
+                                                    <div className="mt-4">
+                                                        <p className="text-[10px] text-muted-foreground mb-1 font-body">{__('messages.week_day')}</p>
+                                                        <RadioGroup.Root value={data.monthDay?.toString()} onValueChange={(value: string) => setData('monthDay', parseInt(value))} className="flex flex-wrap gap-2 max-h-36 overflow-y-auto mt-2">
+                                                            {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                                                                <RadioGroup.Item key={d} value={d.toString()}>
+                                                                    <RadioGroup.Indicator />
+                                                                    <Badge variant="outline" className={`p-4 cursor-pointer ${data.monthDay === d ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface-tertiary border-border/60 text-foreground hover:bg-surface-elevated'}`}>
+                                                                        {d}
+                                                                    </Badge>
+                                                                </RadioGroup.Item>
+                                                            ))}
+                                                        </RadioGroup.Root>
                                                     </div>
-                                                </div>
-                                            )}
-                                        </CollapsibleContent>
-                                    </Collapsible>
+                                                )}
+                                                {data.recurrence === 'weekly' && (
+                                                    <div className="mt-4">
+                                                        <p className="text-[10px] text-muted-foreground mb-1 font-body">{__('messages.week_day')}</p>
+                                                        <div className="flex flex-wrap gap-2 mt-2">
+                                                            {weekDays.map(weekDay => (
+                                                                <button
+                                                                    key={weekDay.id}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const current = data.weekDay ?? [];
+                                                                        setData('weekDay', current.includes(weekDay.id)
+                                                                            ? current.filter(d => d !== weekDay.id)
+                                                                            : [...current, weekDay.id]
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <Badge variant="outline" className={`p-4 cursor-pointer ${data.weekDay?.includes(weekDay.id) ? 'bg-primary text-primary-foreground border-primary' : 'bg-surface-tertiary border-border/60 text-foreground hover:bg-surface-elevated'}`}>
+                                                                        {weekDay.title}
+                                                                    </Badge>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </CollapsibleContent>
+                                        </Collapsible>
                                     </>
                                 )}
                             </div>
