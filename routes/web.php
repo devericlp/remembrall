@@ -27,6 +27,7 @@ use App\Http\Controllers\Task\ShowTaskController;
 use App\Http\Controllers\Task\StoreChecklistItemController;
 use App\Http\Controllers\Task\StoreTaskController;
 use App\Http\Controllers\Task\ToggleChecklistItemController;
+use App\Http\Controllers\Task\UpdateOccurrenceTimeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/service-worker.js', function () {
@@ -85,6 +86,7 @@ Route::middleware(['auth', 'web'])->group(function () {
         Route::post('/', StoreTaskController::class)->name('tasks.store');
         Route::put('/{recurrence}/complete', MarkAsCompletedTaskController::class)->name('tasks.complete');
         Route::put('/{recurrence}/pending', MarkAsPendingTaskController::class)->name('tasks.pending');
+        Route::put('/{recurrence}/time', UpdateOccurrenceTimeController::class)->name('tasks.time.update');
         Route::post('/{recurrence}/checklist', StoreChecklistItemController::class)->name('tasks.checklist.store');
         Route::put('/{recurrence}/checklist/reorder', ReorderChecklistItemsController::class)->name('tasks.checklist.reorder');
         Route::put('/checklist/{checklistItem}/toggle', ToggleChecklistItemController::class)->name('tasks.checklist.toggle');

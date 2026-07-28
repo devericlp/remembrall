@@ -1,6 +1,7 @@
 import PageHeader from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { checkTaskIsDueSoon, checkTaskIsOverdue, formatDate } from "@/lib/utils";
@@ -23,6 +24,7 @@ import {
     GripVertical,
     Hourglass,
     MoreVertical,
+    Pencil,
     Plus,
     RefreshCw,
     Sparkles,
@@ -80,8 +82,12 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
 
     const [sheetOpen, setSheetOpen] = useState(false);
     const [deleteTaskSheetOpen, setDeleteTaskSheetOpen] = useState(false);
+    const [timeSheetOpen, setTimeSheetOpen] = useState(false);
     const [itemDescription, setItemDescription] = useState('');
     const [items, setItems] = useState<ChecklistItem[]>(taskRecurrence.checklist_items);
+    const [startTime, setStartTime] = useState(formatDate(taskRecurrence.start_date, "H:i"));
+    const [endTime, setEndTime] = useState(formatDate(taskRecurrence.end_date, "H:i"));
+    const [timeErrors, setTimeErrors] = useState<{ startTime?: string; endTime?: string }>({});
     const maxLength = 100;
 
     const keyboardInset = useKeyboardInset();
@@ -103,6 +109,14 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
     useEffect(() => {
         setItems(taskRecurrence.checklist_items);
     }, [taskRecurrence.checklist_items]);
+
+    useEffect(() => {
+        if (timeSheetOpen) {
+            setStartTime(formatDate(taskRecurrence.start_date, "H:i"));
+            setEndTime(formatDate(taskRecurrence.end_date, "H:i"));
+            setTimeErrors({});
+        }
+    }, [timeSheetOpen, taskRecurrence.start_date, taskRecurrence.end_date]);
 
     const isCompleted = taskRecurrence.completed_at !== null;
     const isOverdue = !isCompleted && checkTaskIsOverdue(taskRecurrence.end_date);
@@ -181,6 +195,24 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                 toast.success(__("messages.task_updated_successfully"));
             },
             onError: () => toast.error(__("messages.oops_something_went_wrong_please_try_again")),
+        });
+    }
+
+    function handleUpdateTime() {
+        if (endTime <= startTime) {
+            setTimeErrors({ endTime: __("messages.end_time_must_be_after_start_time") });
+            return;
+        }
+
+        router.put(`/tasks/${taskRecurrence.id}/time`, { startTime, endTime }, {
+            onSuccess: () => {
+                setTimeSheetOpen(false);
+                toast.success(__("messages.task_updated_successfully"));
+            },
+            onError: (errors) => {
+                setTimeErrors(errors as { startTime?: string; endTime?: string });
+                toast.error(__("messages.oops_something_went_wrong_please_try_again"));
+            },
         });
     }
 
@@ -266,6 +298,12 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                         <span className="flex items-center gap-2 text-sm text-hint-foreground">
                             <Clock className="size-4 text-gold-primary" />
                             {__("messages.time")}
+                            <button
+                                onClick={() => setTimeSheetOpen(true)}
+                                className="flex items-center justify-center size-6 rounded-full hover:bg-nav-icon/10 transition-colors cursor-pointer"
+                            >
+                                <Pencil className="size-3.5 text-hint-foreground" />
+                            </button>
                         </span>
                         <span className="inline-flex items-center text-sm font-medium text-gold-primary">
                             {formatDate(taskRecurrence.start_date, "H:i")} → {formatDate(taskRecurrence.end_date, "H:i")}
@@ -429,6 +467,66 @@ function TaskShow({ taskRecurrence }: { taskRecurrence: TaskRecurrence }) {
                                 disabled={itemDescription.trim().length === 0}
                             >
                                 {__("messages.create")}
+                            </Button>
+                        </div>
+                    </SheetContent>
+                </Sheet>
+
+                <Sheet open={timeSheetOpen} onOpenChange={setTimeSheetOpen}>
+                    <SheetContent
+                        side="bottom"
+                        showCloseButton={false}
+                        style={{
+                            transform: keyboardInset > 0 ? `translateY(-${keyboardInset}px)` : undefined,
+                            maxHeight: "85dvh",
+                            transition: "transform 0.15s ease-out",
+                        }}
+                        className="overflow-y-auto rounded-t-2xl px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
+                    >
+                        <SheetHeader className="p-0 mb-4">
+                            <SheetTitle className="text-base font-semibold text-label-foreground">
+                                {__("messages.edit_time")}
+                            </SheetTitle>
+                        </SheetHeader>
+
+                        <div className="flex items-center gap-3">
+                            <div className="flex-1">
+                                <p className="text-[10px] text-muted-foreground mb-1 font-body">{__('messages.start_time')}</p>
+                                <Input
+                                    type="time"
+                                    value={startTime}
+                                    onChange={e => { setStartTime(e.target.value); setTimeErrors({}); }}
+                                    className="font-body h-9 text-sm scheme-dark"
+                                />
+                                {timeErrors.startTime && <span className="text-destructive text-xs">{timeErrors.startTime}</span>}
+                            </div>
+                            <div className="w-4 h-px bg-border mt-4" />
+                            <div className="flex-1">
+                                <p className="text-[10px] text-muted-foreground mb-1 font-body">{__('messages.end_time')}</p>
+                                <Input
+                                    type="time"
+                                    value={endTime}
+                                    onChange={e => { setEndTime(e.target.value); setTimeErrors({}); }}
+                                    className="font-body h-9 text-sm scheme-dark"
+                                />
+                                {timeErrors.endTime && <span className="text-destructive text-xs">{timeErrors.endTime}</span>}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3 mt-4">
+                            <Button
+                                variant="outline"
+                                className="flex-1 cursor-pointer"
+                                onClick={() => setTimeSheetOpen(false)}
+                            >
+                                {__("messages.cancel")}
+                            </Button>
+                            <Button
+                                className="flex-1 btn-primary cursor-pointer"
+                                onClick={handleUpdateTime}
+                                disabled={!startTime || !endTime}
+                            >
+                                {__("messages.save")}
                             </Button>
                         </div>
                     </SheetContent>

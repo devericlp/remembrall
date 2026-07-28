@@ -58,8 +58,8 @@ export default defineConfig({
                     },
                 ],
             },
-            workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+            injectManifest: {
+                globPatterns: ['**/*.{js,css,ico,png,svg,woff2}'],
             },
         }),
     ],

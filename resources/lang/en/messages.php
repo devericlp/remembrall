@@ -44,6 +44,7 @@ return [
     'dont_have_an_account' => "Don't have an account?",
     'due_soon' => 'Due soon',
     'edit_profile' => 'Edit profile',
+    'edit_time' => 'Edit time',
     'email' => 'Email',
     'end_time' => 'End time',
     'end_time_must_be_after_start_time' => 'End time must be after start time',

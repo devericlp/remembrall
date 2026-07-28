@@ -44,6 +44,7 @@ return [
     'dont_have_an_account' => 'Não tem uma conta?',
     'due_soon' => 'Vence em breve',
     'edit_profile' => 'Editar perfil',
+    'edit_time' => 'Editar horário',
     'email' => 'Email',
     'end_time' => 'Hora de término',
     'end_time_must_be_after_start_time' => 'O horário de término deve ser posterior ao horário de início',

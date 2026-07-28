@@ -43,18 +43,7 @@ onBackgroundMessage(messaging, async (payload) => {
     );
 });
 
-const buildScopedManifest = self.__WB_MANIFEST.map((entry) => {
-    if (/^(?:https?:)?\/\//.test(entry.url) || entry.url.startsWith('/')) {
-        return entry;
-    }
-
-    return {
-        ...entry,
-        url: `/build/${entry.url}`,
-    };
-});
-
-precacheAndRoute(buildScopedManifest);
+precacheAndRoute(self.__WB_MANIFEST);
 
 registerRoute(
     ({ url }) => url.hostname === 'fonts.googleapis.com',
