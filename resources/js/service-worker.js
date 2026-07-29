@@ -25,15 +25,11 @@ const firebaseApp = initializeApp({
 
 const messaging = getMessaging(firebaseApp);
 
-// Notifications are sent as data-only FCM messages so this handler has full
-// control over how they're displayed (icon/badge/click), instead of relying
-// on the browser's automatic display of a top-level `notification` payload.
 onBackgroundMessage(messaging, async (payload) => {
     await self.registration.showNotification(
         payload.data?.title ?? 'Remembrall',
         {
             body: payload.data?.body,
-            icon: '/images/logo/icon-192.png',
             badge: '/images/logo/icon-192.png',
             vibrate: [200, 100, 200],
             data: {

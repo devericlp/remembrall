@@ -40,10 +40,15 @@ export async function requestPushToken(): Promise<string | null> {
     const serviceWorkerRegistration =
         await navigator.serviceWorker.ready;
 
-    return getToken(messaging, {
-        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-        serviceWorkerRegistration,
-    });
+    try {
+        return await getToken(messaging, {
+            vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+            serviceWorkerRegistration,
+        });
+    } catch (error) {
+        console.warn('[Push] getToken() failed.', error);
+        return null;
+    }
 }
 
 export async function deletePushToken(): Promise<void> {
@@ -65,7 +70,6 @@ export async function showLocalPushNotification(title: string, body: string): Pr
 
     await registration.showNotification(title, {
         body,
-        icon: '/images/logo/icon-192.png',
         badge: '/images/logo/icon-192.png',
         vibrate: [200, 100, 200],
     });

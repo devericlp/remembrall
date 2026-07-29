@@ -111,6 +111,9 @@ export function usePushNotifications() {
 
             setIsSubscribed(false);
             return { ok: true };
+        } catch (error) {
+            console.warn('[Push] toggle() failed.', error);
+            return { ok: false, reason: 'error' };
         } finally {
             setIsLoading(false);
             isBusyRef.current = false;
