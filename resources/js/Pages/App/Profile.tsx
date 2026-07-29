@@ -10,7 +10,7 @@ import { User } from "@/types/models/user";
 import { router, useHttp, usePage } from "@inertiajs/react";
 import { format, type Locale } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
-import { BarChart2, Bell, ChevronRight, Clock, Globe, LogOut, Mail, UserPen } from "lucide-react";
+import { BarChart2, Bell, BellOff, ChevronRight, Clock, Globe, LogOut, Mail, UserPen } from "lucide-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import AppLayout from "../../Layouts/AppLayout";
@@ -125,30 +125,39 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
 
                         <div className="h-px bg-border" />
                         <div className="flex items-center justify-between py-2">
-                            <div className="flex flex-col gap-0.5">
-                                <span className="flex items-center gap-2 text-sm text-label-foreground">
-                                    <Bell className="size-4 text-gold-primary" />
-                                    {__('messages.activate_notifications')}
-                                </span>
-                                <span className="text-xs text-hint-foreground pl-6">
-                                    {__('messages.receive_notifications_from', { name: appName })}
-                                </span>
-                                {!isSupported && (
-                                    <span className="text-xs text-destructive pl-6">
-                                        {__('messages.push_not_supported')}
+                            {isSupported && permission === 'denied' ? (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="flex items-center gap-2 text-sm text-label-foreground">
+                                        <BellOff className="size-4 text-gold-primary" />
+                                        {__('messages.push_permission_denied_title')}
                                     </span>
-                                )}
-                                {isSupported && permission === 'denied' && (
-                                    <span className="text-xs text-destructive pl-6">
-                                        {__('messages.push_permission_denied')}
+                                    <span className="text-xs text-hint-foreground pl-6">
+                                        {__('messages.push_permission_denied_subtitle', { name: appName })}
                                     </span>
-                                )}
-                            </div>
-                            <Switch
-                                checked={isSubscribed}
-                                disabled={!isSupported || isPushLoading}
-                                onCheckedChange={handlePushToggle}
-                            />
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="flex items-center gap-2 text-sm text-label-foreground">
+                                            <Bell className="size-4 text-gold-primary" />
+                                            {__('messages.activate_notifications')}
+                                        </span>
+                                        <span className="text-xs text-hint-foreground pl-6">
+                                            {__('messages.receive_notifications_from', { name: appName })}
+                                        </span>
+                                        {!isSupported && (
+                                            <span className="text-xs text-destructive pl-6">
+                                                {__('messages.push_not_supported')}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <Switch
+                                        checked={isSubscribed}
+                                        disabled={!isSupported || isPushLoading}
+                                        onCheckedChange={handlePushToggle}
+                                    />
+                                </>
+                            )}
                         </div>
 
                         <div className="h-px bg-border" />

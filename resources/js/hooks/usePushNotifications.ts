@@ -1,5 +1,6 @@
 import { deletePushToken, getPushDeviceId, requestPushToken } from '@/lib/push-notifications';
 import { router } from '@inertiajs/react';
+import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type PushPermissionState = 'granted' | 'denied' | 'default' | 'unsupported';
@@ -31,11 +32,33 @@ export function usePushNotifications() {
     useEffect(() => {
         if (!isSupported) {
             setPermission('unsupported');
+            setIsSubscribed(false);
             return;
         }
 
-        setPermission(Notification.permission);
-        setIsSubscribed(Notification.permission === 'granted');
+        const currentPermission = Notification.permission;
+        setPermission(currentPermission);
+
+        let cancelled = false;
+
+        axios
+            .get<{ enabled: boolean }>('/profile/notifications/status', {
+                params: { device_id: getPushDeviceId() },
+            })
+            .then(({ data }) => {
+                if (!cancelled) {
+                    setIsSubscribed(data.enabled && currentPermission === 'granted');
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    setIsSubscribed(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
     }, [isSupported]);
 
     const toggle = useCallback(async (enabled: boolean): Promise<ToggleResult> => {

@@ -144,6 +144,8 @@ return [
     'profile_updated_successfully' => 'Profile updated successfully',
     'push_not_supported' => 'Your browser does not support push notifications.',
     'push_permission_denied' => 'Notifications are blocked in your browser. Enable them manually in the site settings to turn this on.',
+    'push_permission_denied_subtitle' => 'Open Settings → Apps → :name → Notifications and enable Allow notifications.',
+    'push_permission_denied_title' => 'Notifications disabled',
     'receive_notifications_from' => 'Receive notifications from :name',
     'red_smoke_indicates_forgotten_reminders' => 'Red smoke indicates forgotten reminders',
     'reminder' => 'Reminder',
