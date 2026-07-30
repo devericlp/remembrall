@@ -14,15 +14,6 @@ export function getPushDeviceId(): string {
     return deviceId;
 }
 
-async function waitForActiveServiceWorker(timeoutMs = 8000): Promise<ServiceWorkerRegistration> {
-    return Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('Service worker did not activate in time')), timeoutMs)
-        ),
-    ]);
-}
-
 export async function requestPushToken(): Promise<string | null> {
     if (
         !('Notification' in window) ||
@@ -46,14 +37,9 @@ export async function requestPushToken(): Promise<string | null> {
         return null;
     }
 
+    const serviceWorkerRegistration = await navigator.serviceWorker.ready;
+
     try {
-        const serviceWorkerRegistration = await waitForActiveServiceWorker();
-        const existingSubscription = await serviceWorkerRegistration.pushManager.getSubscription();
-
-        if (existingSubscription) {
-            await existingSubscription.unsubscribe();
-        }
-
         return await getToken(messaging, {
             vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
             serviceWorkerRegistration,
