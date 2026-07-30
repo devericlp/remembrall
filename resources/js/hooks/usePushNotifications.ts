@@ -98,8 +98,6 @@ export function usePushNotifications() {
                 return { ok: true };
             }
 
-            await deletePushToken().catch(() => {});
-
             const success = await putNotificationsUpdate({
                 enabled: false,
                 device_id: getPushDeviceId(),
@@ -108,6 +106,8 @@ export function usePushNotifications() {
             if (!success) {
                 return { ok: false, reason: 'error' };
             }
+
+            await deletePushToken().catch(() => {});
 
             setIsSubscribed(false);
             return { ok: true };
