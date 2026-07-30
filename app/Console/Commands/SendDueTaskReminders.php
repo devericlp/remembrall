@@ -39,7 +39,7 @@ class SendDueTaskReminders extends Command
             return self::SUCCESS;
         }
 
-        Log::channel('reminders')->info('reminders.batch.start', [
+        Log::info('reminders.batch.start', [
             'count' => $recurrences->count(),
         ]);
 
@@ -55,7 +55,7 @@ class SendDueTaskReminders extends Command
             };
         }
 
-        Log::channel('reminders')->info('reminders.batch.finish', [
+        Log::info('reminders.batch.finish', [
             'total' => $recurrences->count(),
             'sent' => $sent,
             'skipped' => $skipped,
@@ -82,7 +82,7 @@ class SendDueTaskReminders extends Command
         if (! $user->pushDevices()->where('enabled', true)->exists()) {
             $recurrence->update(['reminder_sent_at' => now()]);
 
-            Log::channel('reminders')->info('reminders.skipped.no_enabled_device', $context);
+            Log::info('reminders.skipped.no_enabled_device', $context);
 
             return 'skipped';
         }
@@ -92,11 +92,11 @@ class SendDueTaskReminders extends Command
 
             $recurrence->update(['reminder_sent_at' => now()]);
 
-            Log::channel('reminders')->info('reminders.sent', $context);
+            Log::info('reminders.sent', $context);
 
             return 'sent';
         } catch (Throwable $e) {
-            Log::channel('reminders')->error('reminders.failed', [
+            Log::error('reminders.failed', [
                 ...$context,
                 'error' => $e->getMessage(),
                 'exception' => $e::class,

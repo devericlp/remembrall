@@ -40,7 +40,7 @@ class FcmChannel
 
                 $device->update(['last_success_at' => now()]);
 
-                Log::channel('reminders')->info('fcm.send.success', $context);
+                Log::info('fcm.send.success', $context);
             } catch (NotFound|InvalidArgument $e) {
                 $device->update([
                     'enabled' => false,
@@ -49,7 +49,7 @@ class FcmChannel
                     'last_error_message' => $e->getMessage(),
                 ]);
 
-                Log::channel('reminders')->warning('fcm.send.invalid_token', [
+                Log::warning('fcm.send.invalid_token', [
                     ...$context,
                     'error' => $e->getMessage(),
                 ]);
@@ -60,7 +60,7 @@ class FcmChannel
                     'last_error_message' => $e->getMessage(),
                 ]);
 
-                Log::channel('reminders')->error('fcm.send.failed', [
+                Log::error('fcm.send.failed', [
                     ...$context,
                     'error' => $e->getMessage(),
                 ]);
