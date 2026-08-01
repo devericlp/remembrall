@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { showLocalPushNotification } from "@/lib/push-notifications";
+import { deletePushToken, getPushDeviceId, requestPushToken, showLocalPushNotification } from "@/lib/push-notifications";
 import { getInitials } from "@/lib/utils";
 import { GlobalProps } from "@/types/global";
 import { User } from "@/types/models/user";
@@ -11,11 +11,10 @@ import { router, useHttp, usePage } from "@inertiajs/react";
 import { format, type Locale } from "date-fns";
 import { enUS, ptBR } from "date-fns/locale";
 import { BarChart2, Bell, BellOff, ChevronRight, Clock, Globe, LogOut, Mail, UserPen } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import AppLayout from "../../Layouts/AppLayout";
 import { useLang } from "../../hooks/useLang";
-import { usePushNotifications } from "../../hooks/usePushNotifications";
 
 type language = {
     key: string,
@@ -25,6 +24,7 @@ type language = {
 type ProfilePageProps = {
     languages: language[]
     systemTime: string
+    pushNotificationsEnabled: boolean
 }
 
 const localeMap: Record<string, Locale> = { pt_br: ptBR, en: enUS };
@@ -33,16 +33,16 @@ type LanguageProps = {
     language: string;
 };
 
-function Profile({ languages, systemTime }: ProfilePageProps) {
+function Profile({ languages, systemTime, pushNotificationsEnabled }: ProfilePageProps) {
     const { appName, auth, currentLanguage } = usePage<GlobalProps>().props;
     const { __ } = useLang();
-    const {
-        isLoading: isPushLoading,
-        isSubscribed,
-        isSupported,
-        permission,
-        toggle,
-    } = usePushNotifications();
+
+    const isSupported = 'serviceWorker' in navigator && 'Notification' in window;
+    const [isPushLoading, setIsPushLoading] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(pushNotificationsEnabled);
+    const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(
+        isSupported ? Notification.permission : 'unsupported'
+    );
 
     const user: User = auth.user;
     const locale = localeMap[currentLanguage] ?? enUS;
@@ -59,24 +59,67 @@ function Profile({ languages, systemTime }: ProfilePageProps) {
         });
     }
 
-    async function handlePushToggle(value: boolean) {
-        const result = await toggle(value);
+    function putNotificationsUpdate(payload: {
+        enabled: boolean;
+        device_id: string;
+        token?: string;
+        platform?: string;
+    }): Promise<boolean> {
+        return new Promise((resolve) => {
+            router.put('/profile/notifications/update', payload, {
+                onSuccess: () => resolve(true),
+                onError: () => resolve(false),
+            });
+        });
+    }
 
-        if (result.ok) {
+    async function handlePushToggle(value: boolean) {
+        setIsPushLoading(true);
+
+        try {
             if (value) {
+                const token = await requestPushToken();
+                setPermission(Notification.permission);
+
+                if (!token) {
+                    toast.error(__(Notification.permission === 'denied'
+                        ? 'messages.push_permission_denied'
+                        : 'messages.oops_something_went_wrong_please_try_again'));
+                    return;
+                }
+
+                const success = await putNotificationsUpdate({
+                    enabled: true,
+                    device_id: getPushDeviceId(),
+                    token,
+                    platform: 'web',
+                });
+
+                if (!success) {
+                    toast.error(__('messages.oops_something_went_wrong_please_try_again'));
+                    return;
+                }
+
+                setIsSubscribed(true);
                 showLocalPushNotification(appName, __('messages.push_notifications_activated_body', { name: appName }));
+                return;
             }
 
-            return;
+            const success = await putNotificationsUpdate({
+                enabled: false,
+                device_id: getPushDeviceId(),
+            });
+
+            if (!success) {
+                toast.error(__('messages.oops_something_went_wrong_please_try_again'));
+                return;
+            }
+
+            await deletePushToken().catch(() => {});
+            setIsSubscribed(false);
+        } finally {
+            setIsPushLoading(false);
         }
-
-        const messageKey = result.reason === 'denied'
-            ? 'messages.push_permission_denied'
-            : result.reason === 'unsupported'
-                ? 'messages.push_not_supported'
-                : 'messages.oops_something_went_wrong_please_try_again';
-
-        toast.error(__(messageKey));
     }
 
     const logout = () => {

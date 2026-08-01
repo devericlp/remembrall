@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->redirectGuestsTo('/login');
         $middleware->redirectUsersTo('/home');
+        $middleware->encryptCookies(except: ['push_device_id']);
         $middleware->web(append: [
             SetLocale::class, // This middleware must be registered before HandleInertiaRequests to ensure the locale is set before rendering any views.
             HandleInertiaRequests::class,

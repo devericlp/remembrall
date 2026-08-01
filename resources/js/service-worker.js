@@ -39,7 +39,19 @@ onBackgroundMessage(messaging, async (payload) => {
     );
 });
 
-precacheAndRoute(self.__WB_MANIFEST);
+const precacheManifest = self.__WB_MANIFEST.map((entry) => {
+    const url = typeof entry === 'string' ? entry : entry.url;
+
+    if (url.startsWith('/') || /^[a-z]+:/i.test(url)) {
+        return entry;
+    }
+
+    const prefixedUrl = `/build/${url}`;
+
+    return typeof entry === 'string' ? prefixedUrl : { ...entry, url: prefixedUrl };
+});
+
+precacheAndRoute(precacheManifest);
 
 registerRoute(
     ({ url }) => url.hostname === 'fonts.googleapis.com',
@@ -49,9 +61,6 @@ registerRoute(
     }),
 );
 
-// Imagens estáticas em public/images (ícones, conquistas, ilustrações) não
-// passam pelo build do Vite, então não entram no precache do __WB_MANIFEST.
-// Cacheamos em runtime, na primeira requisição.
 registerRoute(
     ({ url, request }) => request.destination === 'image' && url.pathname.startsWith('/images/'),
     new CacheFirst({

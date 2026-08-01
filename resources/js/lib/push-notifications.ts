@@ -1,15 +1,35 @@
 import { getFirebaseMessaging } from '@/lib/firebase';
 import { deleteToken, getToken } from 'firebase/messaging';
 
-const DEVICE_ID_STORAGE_KEY = 'push_device_id';
+const DEVICE_ID_COOKIE_NAME = 'push_device_id';
+const DEVICE_ID_LEGACY_STORAGE_KEY = 'push_device_id';
+const DEVICE_ID_COOKIE_MAX_AGE_DAYS = 400; // Safari's hard cap on cookie lifetime
+
+function readCookie(name: string): string | null {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+function writeCookie(name: string, value: string, maxAgeDays: number): void {
+    const maxAgeSeconds = maxAgeDays * 24 * 60 * 60;
+    const secure = location.protocol === 'https:' ? '; secure' : '';
+    document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; samesite=lax${secure}`;
+}
 
 export function getPushDeviceId(): string {
-    let deviceId = localStorage.getItem(DEVICE_ID_STORAGE_KEY);
+    const existingCookie = readCookie(DEVICE_ID_COOKIE_NAME);
 
-    if (!deviceId) {
-        deviceId = crypto.randomUUID();
-        localStorage.setItem(DEVICE_ID_STORAGE_KEY, deviceId);
+    if (existingCookie) {
+        return existingCookie;
     }
+
+    // Migrate a device id previously generated before the switch to cookies,
+    // so already-registered devices don't have to re-enable push.
+    const legacyDeviceId = localStorage.getItem(DEVICE_ID_LEGACY_STORAGE_KEY);
+    const deviceId = legacyDeviceId ?? crypto.randomUUID();
+
+    writeCookie(DEVICE_ID_COOKIE_NAME, deviceId, DEVICE_ID_COOKIE_MAX_AGE_DAYS);
+    localStorage.removeItem(DEVICE_ID_LEGACY_STORAGE_KEY);
 
     return deviceId;
 }
